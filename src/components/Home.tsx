@@ -218,6 +218,7 @@ function Home({ onAdminLogin }) {
       'Appointment Date': booking['Appointment Date'],
       'Appointment Time': booking['Appointment Time'],
       'Customer Note': booking['Customer Note'] || '',
+      'Appointment Status': booking['Appointment Status'] || 'Pending',
       'Baby Name': booking['Baby Name'] || '',
       'Date of Birth': booking['Date of Birth'] || '',
     });
@@ -655,11 +656,21 @@ function Home({ onAdminLogin }) {
                           </div>
                           <div className="flex justify-between items-center">
                             <span className="text-gray-600 text-sm">Status:</span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking['Appointment Status'] === 'Approved'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking['Appointment Status'] === 'Confirmed' || booking['Appointment Status'] === 'Approved'
+                                ? 'bg-green-100 text-green-800'
+                                : booking['Appointment Status'] === 'Pending'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : booking['Appointment Status'] === 'In Progress'
+                                    ? 'bg-blue-100 text-blue-800'
+                                    : booking['Appointment Status'] === 'Completed'
+                                      ? 'bg-purple-100 text-purple-800'
+                                      : booking['Appointment Status'] === 'Cancelled'
+                                        ? 'bg-red-100 text-red-800'
+                                        : booking['Appointment Status'] === 'Rescheduled'
+                                          ? 'bg-orange-100 text-orange-800'
+                                          : 'bg-gray-100 text-gray-800'
                               }`}>
-                              {booking['Appointment Status'] || 'N/A'}
+                              {booking['Appointment Status'] || 'Pending'}
                             </span>
                           </div>
                         </div>
@@ -794,7 +805,7 @@ function Home({ onAdminLogin }) {
                   />
                 </div>
 
-                <div className="md:col-span-2">
+                <div className="">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
                   <input
                     type="text"
@@ -802,6 +813,22 @@ function Home({ onAdminLogin }) {
                     onChange={(e) => setEditForm({ ...editForm, 'Date of Birth': e.target.value })}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Appointment Status</label>
+                  <select
+                    value={editForm['Appointment Status'] || 'Pending'}
+                    onChange={(e) => setEditForm({ ...editForm, 'Appointment Status': e.target.value })}
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                    <option value="Rescheduled">Rescheduled</option>
+                  </select>
                 </div>
 
                 <div className="md:col-span-2">
