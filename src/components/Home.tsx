@@ -226,7 +226,7 @@ function Home({ onAdminLogin }) {
       'Appointment Date': booking['Appointment Date'],
       'Appointment Time': booking['Appointment Time'],
       'Customer Note': booking['Customer Note'] || '',
-      'Appointment Status': booking['Appointment Status'] || 'Pending',
+      'Status': booking['Status'] || 'Booked',
       'Baby Name': booking['Baby Name'] || '',
       'Date of Birth': booking['Date of Birth'] || '',
     });
@@ -708,22 +708,22 @@ function Home({ onAdminLogin }) {
                             <span className="text-gray-900 text-sm font-medium">{booking['Appointment Duration'] || 'N/A'}</span>
                           </div>
                           <div className="flex justify-between items-center">
-                            <span className="text-gray-600 text-sm">Status:</span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking['Appointment Status'] === 'Confirmed' || booking['Appointment Status'] === 'Approved'
+                            <span className="text-gray-600 text-sm">Stage:</span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking['Status'] === 'Booked'
                               ? 'bg-green-100 text-green-800'
-                              : booking['Appointment Status'] === 'Pending'
+                              : booking['Status'] === 'Pending'
                                 ? 'bg-yellow-100 text-yellow-800'
-                                : booking['Appointment Status'] === 'In Progress'
+                                : booking['Status'] === 'In Progress'
                                   ? 'bg-blue-100 text-blue-800'
-                                  : booking['Appointment Status'] === 'Completed'
+                                  : booking['Status'] === 'Completed'
                                     ? 'bg-purple-100 text-purple-800'
-                                    : booking['Appointment Status'] === 'Cancelled'
+                                    : booking['Status'] === 'Cancelled'
                                       ? 'bg-red-100 text-red-800'
-                                      : booking['Appointment Status'] === 'Rescheduled'
+                                      : booking['Status'] === 'Rescheduled'
                                         ? 'bg-orange-100 text-orange-800'
                                         : 'bg-gray-100 text-gray-800'
                               }`}>
-                              {booking['Appointment Status'] || 'Pending'}
+                              {booking['Status'] || 'Pending'}
                             </span>
                           </div>
                         </div>
@@ -869,18 +869,25 @@ function Home({ onAdminLogin }) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Appointment Status</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Stage</label>
                   <select
-                    value={editForm['Appointment Status'] || 'Pending'}
-                    onChange={(e) => setEditForm({ ...editForm, 'Appointment Status': e.target.value })}
+                    value={editForm['Status'] || 'Pending'}
+                    onChange={(e) => setEditForm({ ...editForm, 'Status': e.target.value })}
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
                   >
-                    <option value="Pending">Pending</option>
-                    <option value="Confirmed">Confirmed</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                    <option value="Rescheduled">Rescheduled</option>
+                    <option value="Booked">Booked</option>
+                    <option value="Photos sent for selection">Photos sent for selection</option>
+                    <option value="Photos selected">Photos selected</option>
+                    <option value="Editing">Editing</option>
+                    <option value="Edited photos sent">Edited photos sent</option>
+                    <option value="Album layout sent">Album layout sent</option>
+                    <option value="Pending customer confirmation">Pending customer confirmation</option>
+                    <option value="Sent for printing">Sent for printing</option>
+                    <option value="Ready for delivery">Ready for delivery</option>
+                    <option value="Out for delivery">Out for delivery</option>
+                    <option value="Delivered">Delivered</option>
+
+
                   </select>
                 </div>
 
