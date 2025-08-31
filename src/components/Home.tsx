@@ -48,6 +48,7 @@ function Home({ onAdminLogin }) {
   const [error, setError] = useState('');
   const [editingBooking, setEditingBooking] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [employeePassword, setEmployeePassword] = useState('');
   const [adminCredentials, setAdminCredentials] = useState({
     email: '',
     password: ''
@@ -137,6 +138,19 @@ function Home({ onAdminLogin }) {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Employee password validation
+    if (adminType === 'employee' && !employeePassword) {
+      setError('Please enter employee password');
+      setLoading(false);
+      return;
+    }
+
+    if (adminType === 'employee' && employeePassword !== '1234') { // Replace with your actual password
+      setError('Invalid employee password');
+      setLoading(false);
+      return;
+    }
 
     let requestBody = {};
     let isValid = false;
@@ -315,7 +329,10 @@ function Home({ onAdminLogin }) {
       {/* Search Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50 p-4">
-          <div className="w-full max-w-4xl h-[70vh] min-h-[600px] bg-white rounded-3xl flex overflow-hidden shadow-2xl">
+          <div className={`w-full max-w-4xl bg-white rounded-3xl flex overflow-hidden shadow-2xl ${adminType === 'employee'
+              ? 'h-[700px]'
+              : 'h-[70vh] min-h-[600px]'
+            }`}>
             {/* Left Side - Form */}
             <div className="flex-1 p-12 flex flex-col justify-center bg-white">
               <div>
@@ -481,7 +498,7 @@ function Home({ onAdminLogin }) {
                       <label className="block text-sm font-semibold text-gray-700 mb-3">
                         Phone Number
                       </label>
-                      <div className="relative">
+                      <div className="relative mb-6">
                         <input
                           type="tel"
                           placeholder="971 XXX XXX XXX"
@@ -498,13 +515,38 @@ function Home({ onAdminLogin }) {
                           </div>
                         </div>
                       </div>
+
+                      {/* Employee Password Field - only show for employee */}
+                      {adminType === 'employee' && (
+                        <>
+                          <label className="block text-sm font-semibold text-gray-700 mb-3">
+                            Employee Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="password"
+                              placeholder="Enter employee password"
+                              value={employeePassword}
+                              onChange={(e) => setEmployeePassword(e.target.value)}
+                              className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                            />
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </>
                   ) : (
                     <>
                       <label className="block text-sm font-semibold text-gray-700 mb-3">
                         Booking ID
                       </label>
-                      <div className="relative">
+                      <div className="relative mb-6">
                         <input
                           type="text"
                           placeholder="Enter your booking ID"
@@ -520,6 +562,31 @@ function Home({ onAdminLogin }) {
                           </div>
                         </div>
                       </div>
+
+                      {/* Employee Password Field - only show for employee */}
+                      {adminType === 'employee' && (
+                        <>
+                          <label className="block text-sm font-semibold text-gray-700 mb-3">
+                            Employee Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="password"
+                              placeholder="Enter employee password"
+                              value={employeePassword}
+                              onChange={(e) => setEmployeePassword(e.target.value)}
+                              className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                            />
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                </svg>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </>
                   )}
                 </div>
