@@ -53,6 +53,8 @@ function Home({ onAdminLogin }) {
     password: ''
   });
   const [adminLoading, setAdminLoading] = useState(false);
+  const [adminType, setAdminType] = useState('admin'); // New state for admin/employee selection
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false); // New state for dropdown visibility
 
 
 
@@ -90,6 +92,12 @@ function Home({ onAdminLogin }) {
     setBookingId('');
     setAdminCredentials({ email: '', password: '' });
     setError('');
+
+    // Reset adminType when switching to customer
+    if (type === 'user') {
+      setAdminType('admin'); // Reset to default
+      setShowAdminDropdown(false);
+    }
   };
 
   const handleAdminLogin = async (e) => {
@@ -285,10 +293,11 @@ function Home({ onAdminLogin }) {
     setBookingId('');
     setSearchType('phone');
     setUserType('user');
+    setAdminType('admin'); // Reset admin type
+    setShowAdminDropdown(false); // Close dropdown
     setAdminCredentials({ email: '', password: '' });
     setError('');
 
-    // Clear user session data (but keep admin session if logged in)
     sessionStorage.removeItem('bookingData');
     sessionStorage.removeItem('userSearchData');
   };
@@ -314,31 +323,67 @@ function Home({ onAdminLogin }) {
                   <button
                     type="button"
                     onClick={() => handleUserTypeChange('user')}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${userType === 'user'
+                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${(userType === 'user' && adminType !== 'employee')
                       ? 'text-white shadow-lg transform scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
-                    style={userType === 'user' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                    style={(userType === 'user' && adminType !== 'employee') ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
                   >
-                    👤 User
+                    👤 Customer
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => handleUserTypeChange('admin')}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${userType === 'admin'
-                      ? 'text-white shadow-lg transform scale-105'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                      }`}
-                    style={userType === 'admin' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
-                  >
-                    🔐 Admin
-                  </button>
+                  <div className="relative flex-1">
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminDropdown(!showAdminDropdown)}
+                      className={`w-full py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden flex items-center justify-between ${(userType === 'admin' || adminType === 'employee')
+                        ? 'text-white shadow-lg transform scale-105'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }`}
+                      style={(userType === 'admin' || adminType === 'employee') ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                    >
+                      <span>🔐 {adminType === 'admin' ? 'Admin' : 'Employee'}</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+
+                    {showAdminDropdown && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAdminType('admin');
+                            setUserType('admin');
+                            setShowAdminDropdown(false);
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 first:rounded-t-xl transition-colors duration-200"
+                        >
+                          🔐 Admin
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAdminType('employee');
+                            setUserType('user'); // Set to 'user' to show search form
+                            setShowAdminDropdown(false);
+                          }}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-50 last:rounded-b-xl transition-colors duration-200"
+                        >
+                          👤 Employee
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <h1 className="text-4xl font-bold text-gray-800 mb-3 leading-tight">
                   Welcome Back!
                 </h1>
                 <p className="text-lg text-gray-600 mb-8">
-                  {userType === 'admin' ? 'Admin login to access dashboard' : 'Search for your bookings using phone number or booking ID'}
+                  {userType === 'admin'
+                    ? 'Admin login to access dashboard'
+                    : adminType === 'employee'
+                      ? 'Employee search - Find bookings with view-only access'
+                      : 'Search for your bookings using phone number or booking ID'}
                 </p>
 
                 {error && (
@@ -386,7 +431,7 @@ function Home({ onAdminLogin }) {
 
                 {/* Input Field */}
                 <div className="mb-8">
-                  {userType === 'admin' ? (
+                  {userType === 'admin' && adminType === 'admin' ? (
                     <>
                       <div className="mb-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -488,13 +533,13 @@ function Home({ onAdminLogin }) {
                     }`}
                   style={(userType === 'admin' ? adminLoading : loading) ? {} : { backgroundColor: 'oklch(45% 0.085 224.283)' }}
                 >
-                  {userType === 'admin' ? (
-                    adminLoading ? (
+                  {(userType === 'admin' || adminType === 'employee') ? (
+                    (userType === 'admin' ? adminLoading : loading) ? (
                       <span className="flex items-center justify-center gap-3">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Logging in...
+                        {adminType === 'employee' ? 'Finding Bookings...' : 'Logging in...'}
                       </span>
-                    ) : 'Admin Login'
+                    ) : (adminType === 'employee' ? 'Find Bookings' : 'Admin Login')
                   ) : (
                     loading ? (
                       <span className="flex items-center justify-center gap-3">
@@ -547,14 +592,20 @@ function Home({ onAdminLogin }) {
                   )}
                 </div>
                 <h3 className="text-2xl font-semibold mb-4">
-                  {userType === 'admin' ? 'Admin Access' : 'Your Bookings Await'}
+                  {userType === 'admin'
+                    ? 'Admin Access'
+                    : adminType === 'employee'
+                      ? 'Employee Access'
+                      : 'Your Bookings Await'}
                 </h3>
                 <p className="text-base opacity-90 leading-relaxed">
                   {userType === 'admin'
-                    ? 'Secure admin portal access'
-                    : searchType === 'phone'
-                      ? 'Quick and secure access with your phone number'
-                      : 'Direct access with your booking ID'
+                    ? 'Full admin portal access with edit permissions'
+                    : adminType === 'employee'
+                      ? 'Employee access with view-only permissions'
+                      : searchType === 'phone'
+                        ? 'Quick and secure access with your phone number'
+                        : 'Direct access with your booking ID'
                   }
                 </p>
               </div>
@@ -601,13 +652,15 @@ function Home({ onAdminLogin }) {
                         {booking['Service Name']}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleEdit(booking)}
-                      className="bg-white px-5 py-2 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300"
-                      style={{ color: 'oklch(45% 0.085 224.283)' }}
-                    >
-                      Edit
-                    </button>
+                    {(userType === 'user' && adminType !== 'employee') === false && (
+                      <button
+                        onClick={() => handleEdit(booking)}
+                        className="bg-white px-5 py-2 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300"
+                        style={{ color: 'oklch(45% 0.085 224.283)' }}
+                      >
+                        Edit
+                      </button>
+                    )}
                   </div>
 
                   {/* Card Content */}
@@ -657,18 +710,18 @@ function Home({ onAdminLogin }) {
                           <div className="flex justify-between items-center">
                             <span className="text-gray-600 text-sm">Status:</span>
                             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking['Appointment Status'] === 'Confirmed' || booking['Appointment Status'] === 'Approved'
-                                ? 'bg-green-100 text-green-800'
-                                : booking['Appointment Status'] === 'Pending'
-                                  ? 'bg-yellow-100 text-yellow-800'
-                                  : booking['Appointment Status'] === 'In Progress'
-                                    ? 'bg-blue-100 text-blue-800'
-                                    : booking['Appointment Status'] === 'Completed'
-                                      ? 'bg-purple-100 text-purple-800'
-                                      : booking['Appointment Status'] === 'Cancelled'
-                                        ? 'bg-red-100 text-red-800'
-                                        : booking['Appointment Status'] === 'Rescheduled'
-                                          ? 'bg-orange-100 text-orange-800'
-                                          : 'bg-gray-100 text-gray-800'
+                              ? 'bg-green-100 text-green-800'
+                              : booking['Appointment Status'] === 'Pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : booking['Appointment Status'] === 'In Progress'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : booking['Appointment Status'] === 'Completed'
+                                    ? 'bg-purple-100 text-purple-800'
+                                    : booking['Appointment Status'] === 'Cancelled'
+                                      ? 'bg-red-100 text-red-800'
+                                      : booking['Appointment Status'] === 'Rescheduled'
+                                        ? 'bg-orange-100 text-orange-800'
+                                        : 'bg-gray-100 text-gray-800'
                               }`}>
                               {booking['Appointment Status'] || 'Pending'}
                             </span>
