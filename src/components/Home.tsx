@@ -1,37 +1,12 @@
 import { useState, useEffect } from 'react';
 
-function Home({ onAdminLogin }) {
-  // Initialize state from sessionStorage
+function Home({ onAdminLogin, onEmployeeLogin }) {
+  // Initialize state from React state (not using browser storage per guidelines)
   const getInitialBookings = () => {
-    try {
-      const savedBookings = sessionStorage.getItem('bookingData');
-      if (savedBookings) {
-        const data = JSON.parse(savedBookings);
-        let bookingRecords = [];
-        if (Array.isArray(data) && data.length > 0 && data[0].allRecords) {
-          bookingRecords = data[0].allRecords;
-        } else if (data.allRecords) {
-          bookingRecords = data.allRecords;
-        } else if (Array.isArray(data)) {
-          bookingRecords = data;
-        }
-        return bookingRecords;
-      }
-    } catch (error) {
-      console.error('Error parsing saved bookings:', error);
-    }
     return [];
   };
 
   const getInitialSearchData = () => {
-    try {
-      const savedSearchData = sessionStorage.getItem('userSearchData');
-      if (savedSearchData) {
-        return JSON.parse(savedSearchData);
-      }
-    } catch (error) {
-      console.error('Error parsing saved search data:', error);
-    }
     return null;
   };
 
@@ -48,16 +23,18 @@ function Home({ onAdminLogin }) {
   const [error, setError] = useState('');
   const [editingBooking, setEditingBooking] = useState(null);
   const [editForm, setEditForm] = useState({});
-  const [employeePassword, setEmployeePassword] = useState('');
   const [adminCredentials, setAdminCredentials] = useState({
     email: '',
     password: ''
   });
+  const [employeeCredentials, setEmployeeCredentials] = useState({
+    email: '',
+    password: ''
+  });
   const [adminLoading, setAdminLoading] = useState(false);
-  const [adminType, setAdminType] = useState('admin'); // New state for admin/employee selection
-  const [showAdminDropdown, setShowAdminDropdown] = useState(false); // New state for dropdown visibility
-
-
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [adminType, setAdminType] = useState('admin');
+  const [showAdminDropdown, setShowAdminDropdown] = useState(false);
 
   // Phone number formatting function
   const formatPhoneNumber = (value) => {
@@ -92,11 +69,12 @@ function Home({ onAdminLogin }) {
     setPhoneNumber('');
     setBookingId('');
     setAdminCredentials({ email: '', password: '' });
+    setEmployeeCredentials({ email: '', password: '' });
     setError('');
 
     // Reset adminType when switching to customer
     if (type === 'user') {
-      setAdminType('admin'); // Reset to default
+      setAdminType('admin');
       setShowAdminDropdown(false);
     }
   };
@@ -122,7 +100,6 @@ function Home({ onAdminLogin }) {
       const data = await response.json();
 
       if (data.status === "200") {
-        // Admin login successful - navigate to dashboard
         onAdminLogin();
       } else {
         setError('Please enter correct information');
@@ -134,23 +111,36 @@ function Home({ onAdminLogin }) {
     }
   };
 
+  const handleEmployeeLogin = async (e) => {
+    e.preventDefault();
+    setEmployeeLoading(true);
+    setError('');
+
+    if (!employeeCredentials.email || !employeeCredentials.password) {
+      setError('Please enter both email and password');
+      setEmployeeLoading(false);
+      return;
+    }
+
+    try {
+      // You can create a separate endpoint for employee validation or use the same one
+      // For now, I'll use a simple check - replace with your actual employee validation logic
+      if (employeeCredentials.email === 'alihassanbscs99@gmail.com' && employeeCredentials.password === '1234') {
+        onEmployeeLogin();
+      } else {
+        setError('Please enter correct employee credentials');
+      }
+    } catch (err) {
+      setError('Please enter correct information');
+    } finally {
+      setEmployeeLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
-
-    // Employee password validation
-    if (adminType === 'employee' && !employeePassword) {
-      setError('Please enter employee password');
-      setLoading(false);
-      return;
-    }
-
-    if (adminType === 'employee' && employeePassword !== '1234') { // Replace with your actual password
-      setError('Invalid employee password');
-      setLoading(false);
-      return;
-    }
 
     let requestBody = {};
     let isValid = false;
@@ -199,15 +189,6 @@ function Home({ onAdminLogin }) {
       if (!response.ok) throw new Error('Failed to fetch bookings');
 
       const data = await response.json();
-
-      // Save search criteria and booking data to sessionStorage
-      const searchData = {
-        searchType,
-        phoneNumber,
-        bookingId
-      };
-      sessionStorage.setItem('userSearchData', JSON.stringify(searchData));
-      sessionStorage.setItem('bookingData', JSON.stringify(data));
 
       let bookingRecords = [];
       if (Array.isArray(data) && data.length > 0 && data[0].allRecords) {
@@ -271,20 +252,6 @@ function Home({ onAdminLogin }) {
       });
 
       setBookings(updatedBookings);
-      // Update sessionStorage with new booking data
-      // Get the original data structure and update it
-      const currentData = JSON.parse(sessionStorage.getItem('bookingData') || '{}');
-      let updatedData;
-
-      if (Array.isArray(currentData) && currentData.length > 0 && currentData[0].allRecords) {
-        updatedData = [{ ...currentData[0], allRecords: updatedBookings }];
-      } else if (currentData.allRecords) {
-        updatedData = { ...currentData, allRecords: updatedBookings };
-      } else {
-        updatedData = [{ allRecords: updatedBookings }];
-      }
-
-      sessionStorage.setItem('bookingData', JSON.stringify(updatedData));
       setEditingBooking(null);
       setEditForm({});
       setError('');
@@ -307,13 +274,11 @@ function Home({ onAdminLogin }) {
     setBookingId('');
     setSearchType('phone');
     setUserType('user');
-    setAdminType('admin'); // Reset admin type
-    setShowAdminDropdown(false); // Close dropdown
+    setAdminType('admin');
+    setShowAdminDropdown(false);
     setAdminCredentials({ email: '', password: '' });
+    setEmployeeCredentials({ email: '', password: '' });
     setError('');
-
-    sessionStorage.removeItem('bookingData');
-    sessionStorage.removeItem('userSearchData');
   };
 
   return (
@@ -329,10 +294,7 @@ function Home({ onAdminLogin }) {
       {/* Search Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-4xl bg-white rounded-3xl flex overflow-hidden shadow-2xl ${adminType === 'employee'
-              ? 'h-[700px]'
-              : 'h-[70vh] min-h-[600px]'
-            }`}>
+          <div className={`w-full max-w-4xl bg-white rounded-3xl flex overflow-hidden shadow-2xl h-[70vh] min-h-[600px]`}>
             {/* Left Side - Form */}
             <div className="flex-1 p-12 flex flex-col justify-center bg-white">
               <div>
@@ -340,11 +302,11 @@ function Home({ onAdminLogin }) {
                   <button
                     type="button"
                     onClick={() => handleUserTypeChange('user')}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${(userType === 'user' && adminType !== 'employee')
+                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${userType === 'user'
                       ? 'text-white shadow-lg transform scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
-                    style={(userType === 'user' && adminType !== 'employee') ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                    style={userType === 'user' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
                   >
                     👤 Customer
                   </button>
@@ -352,13 +314,13 @@ function Home({ onAdminLogin }) {
                     <button
                       type="button"
                       onClick={() => setShowAdminDropdown(!showAdminDropdown)}
-                      className={`w-full py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden flex items-center justify-between ${(userType === 'admin' || adminType === 'employee')
+                      className={`w-full py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden flex items-center justify-between ${(userType === 'admin' || userType === 'employee')
                         ? 'text-white shadow-lg transform scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
-                      style={(userType === 'admin' || adminType === 'employee') ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                      style={(userType === 'admin' || userType === 'employee') ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
                     >
-                      <span>🔐 {adminType === 'admin' ? 'Admin' : 'Employee'}</span>
+                      <span>🔐 {userType === 'admin' ? 'Admin' : userType === 'employee' ? 'Employee' : 'Staff'}</span>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                       </svg>
@@ -369,7 +331,6 @@ function Home({ onAdminLogin }) {
                         <button
                           type="button"
                           onClick={() => {
-                            setAdminType('admin');
                             setUserType('admin');
                             setShowAdminDropdown(false);
                           }}
@@ -380,8 +341,7 @@ function Home({ onAdminLogin }) {
                         <button
                           type="button"
                           onClick={() => {
-                            setAdminType('employee');
-                            setUserType('user'); // Set to 'user' to show search form
+                            setUserType('employee');
                             setShowAdminDropdown(false);
                           }}
                           className="w-full px-4 py-3 text-left hover:bg-gray-50 last:rounded-b-xl transition-colors duration-200"
@@ -392,14 +352,15 @@ function Home({ onAdminLogin }) {
                     )}
                   </div>
                 </div>
+                
                 <h1 className="text-4xl font-bold text-gray-800 mb-3 leading-tight">
                   Welcome Back!
                 </h1>
                 <p className="text-lg text-gray-600 mb-8">
                   {userType === 'admin'
                     ? 'Admin login to access dashboard'
-                    : adminType === 'employee'
-                      ? 'Employee search - Find bookings with view-only access'
+                    : userType === 'employee'
+                      ? 'Employee login to access employee portal'
                       : 'Search for your bookings using phone number or booking ID'}
                 </p>
 
@@ -411,8 +372,6 @@ function Home({ onAdminLogin }) {
 
                 {/* User Type Selector */}
                 <div className="mb-6">
-
-
                   {userType === 'user' && (
                     <>
                       <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -448,7 +407,7 @@ function Home({ onAdminLogin }) {
 
                 {/* Input Field */}
                 <div className="mb-8">
-                  {userType === 'admin' && adminType === 'admin' ? (
+                  {userType === 'admin' ? (
                     <>
                       <div className="mb-4">
                         <label className="block text-sm font-semibold text-gray-700 mb-3">
@@ -493,12 +452,57 @@ function Home({ onAdminLogin }) {
                         </div>
                       </div>
                     </>
+                  ) : userType === 'employee' ? (
+                    <>
+                      <div className="mb-4">
+                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                          Employee Email
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="email"
+                            placeholder="Enter employee email"
+                            value={employeeCredentials.email}
+                            onChange={(e) => setEmployeeCredentials({ ...employeeCredentials, email: e.target.value })}
+                            className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                          />
+                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                          Employee Password
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="password"
+                            placeholder="Enter employee password"
+                            value={employeeCredentials.password}
+                            onChange={(e) => setEmployeeCredentials({ ...employeeCredentials, password: e.target.value })}
+                            className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                          />
+                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                              </svg>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </>
                   ) : searchType === 'phone' ? (
                     <>
                       <label className="block text-sm font-semibold text-gray-700 mb-3">
                         Phone Number
                       </label>
-                      <div className="relative mb-6">
+                      <div className="relative">
                         <input
                           type="tel"
                           placeholder="971 XXX XXX XXX"
@@ -515,38 +519,13 @@ function Home({ onAdminLogin }) {
                           </div>
                         </div>
                       </div>
-
-                      {/* Employee Password Field - only show for employee */}
-                      {adminType === 'employee' && (
-                        <>
-                          <label className="block text-sm font-semibold text-gray-700 mb-3">
-                            Employee Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="password"
-                              placeholder="Enter employee password"
-                              value={employeePassword}
-                              onChange={(e) => setEmployeePassword(e.target.value)}
-                              className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
-                            />
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
                     </>
                   ) : (
                     <>
                       <label className="block text-sm font-semibold text-gray-700 mb-3">
                         Booking ID
                       </label>
-                      <div className="relative mb-6">
+                      <div className="relative">
                         <input
                           type="text"
                           placeholder="Enter your booking ID"
@@ -562,51 +541,33 @@ function Home({ onAdminLogin }) {
                           </div>
                         </div>
                       </div>
-
-                      {/* Employee Password Field - only show for employee */}
-                      {adminType === 'employee' && (
-                        <>
-                          <label className="block text-sm font-semibold text-gray-700 mb-3">
-                            Employee Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="password"
-                              placeholder="Enter employee password"
-                              value={employeePassword}
-                              onChange={(e) => setEmployeePassword(e.target.value)}
-                              className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
-                            />
-                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                </svg>
-                              </div>
-                            </div>
-                          </div>
-                        </>
-                      )}
                     </>
                   )}
                 </div>
 
                 <button
-                  onClick={userType === 'admin' ? handleAdminLogin : handleSubmit}
-                  disabled={userType === 'admin' ? adminLoading : loading}
-                  className={`w-full py-4 px-6 rounded-2xl text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${(userType === 'admin' ? adminLoading : loading)
+                  onClick={userType === 'admin' ? handleAdminLogin : userType === 'employee' ? handleEmployeeLogin : handleSubmit}
+                  disabled={userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading}
+                  className={`w-full py-4 px-6 rounded-2xl text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${(userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading)
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'shadow-lg hover:-translate-y-1'
                     }`}
-                  style={(userType === 'admin' ? adminLoading : loading) ? {} : { backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                  style={(userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading) ? {} : { backgroundColor: 'oklch(45% 0.085 224.283)' }}
                 >
-                  {(userType === 'admin' || adminType === 'employee') ? (
-                    (userType === 'admin' ? adminLoading : loading) ? (
+                  {userType === 'admin' ? (
+                    adminLoading ? (
                       <span className="flex items-center justify-center gap-3">
                         <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        {adminType === 'employee' ? 'Finding Bookings...' : 'Logging in...'}
+                        Logging in...
                       </span>
-                    ) : (adminType === 'employee' ? 'Find Bookings' : 'Admin Login')
+                    ) : 'Admin Login'
+                  ) : userType === 'employee' ? (
+                    employeeLoading ? (
+                      <span className="flex items-center justify-center gap-3">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Logging in...
+                      </span>
+                    ) : 'Employee Login'
                   ) : (
                     loading ? (
                       <span className="flex items-center justify-center gap-3">
@@ -636,6 +597,16 @@ function Home({ onAdminLogin }) {
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-400 rounded-full animate-pulse"></div>
                       <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-orange-300 rounded-full animate-bounce"></div>
                     </div>
+                  ) : userType === 'employee' ? (
+                    <div className="relative">
+                      <div className="w-24 h-24 mx-auto rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-pulse"></div>
+                      <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-green-300 rounded-full animate-bounce"></div>
+                    </div>
                   ) : searchType === 'phone' ? (
                     <div className="relative">
                       <div className="w-24 h-24 mx-auto rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
@@ -661,14 +632,14 @@ function Home({ onAdminLogin }) {
                 <h3 className="text-2xl font-semibold mb-4">
                   {userType === 'admin'
                     ? 'Admin Access'
-                    : adminType === 'employee'
+                    : userType === 'employee'
                       ? 'Employee Access'
                       : 'Your Bookings Await'}
                 </h3>
                 <p className="text-base opacity-90 leading-relaxed">
                   {userType === 'admin'
                     ? 'Full admin portal access with edit permissions'
-                    : adminType === 'employee'
+                    : userType === 'employee'
                       ? 'Employee access with view-only permissions'
                       : searchType === 'phone'
                         ? 'Quick and secure access with your phone number'
@@ -719,15 +690,13 @@ function Home({ onAdminLogin }) {
                         {booking['Service Name']}
                       </p>
                     </div>
-                    {(userType === 'user' && adminType !== 'employee') === false && (
-                      <button
-                        onClick={() => handleEdit(booking)}
-                        className="bg-white px-5 py-2 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300"
-                        style={{ color: 'oklch(45% 0.085 224.283)' }}
-                      >
-                        Edit
-                      </button>
-                    )}
+                    {/* <button
+                      onClick={() => handleEdit(booking)}
+                      className="bg-white px-5 py-2 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300"
+                      style={{ color: 'oklch(45% 0.085 224.283)' }}
+                    >
+                      Edit
+                    </button> */}
                   </div>
 
                   {/* Card Content */}
@@ -788,7 +757,7 @@ function Home({ onAdminLogin }) {
                                       ? 'bg-red-100 text-red-800'
                                       : booking['Status'] === 'Rescheduled'
                                         ? 'bg-orange-100 text-orange-800'
-                                        : 'bg-gray-100 text-gray-800'
+                                        : 'bg-green-100 text-green-800'
                               }`}>
                               {booking['Status'] || 'Pending'}
                             </span>
@@ -953,8 +922,6 @@ function Home({ onAdminLogin }) {
                     <option value="Ready for delivery">Ready for delivery</option>
                     <option value="Out for delivery">Out for delivery</option>
                     <option value="Delivered">Delivered</option>
-
-
                   </select>
                 </div>
 
