@@ -832,10 +832,11 @@ function Employ({ onLogout, navigateTo }) {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Album</label>
                     <select
-                      value={editForm['Album'] || 'No'}
+                      value={editForm['Album'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'Album': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
+                      <option value="">Select album...</option>
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
                     </select>
@@ -844,10 +845,11 @@ function Employ({ onLogout, navigateTo }) {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Video</label>
                     <select
-                      value={editForm['Video'] || 'No'}
+                      value={editForm['Video'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'Video': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
+                      <option value="">Select video...</option>
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
                     </select>
@@ -856,10 +858,11 @@ function Employ({ onLogout, navigateTo }) {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">RAW Photos to be sent</label>
                     <select
-                      value={editForm['RAW Photos to be sent'] || 'No'}
+                      value={editForm['RAW Photos to be sent'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'RAW Photos to be sent': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
+                      <option value="">Select Photo Sent...</option>
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
                     </select>
@@ -888,10 +891,11 @@ function Employ({ onLogout, navigateTo }) {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Cake</label>
                     <select
-                      value={editForm['Cake'] || 'No'}
+                      value={editForm['Cake'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'Cake': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
+                      <option value="">Select cake...</option>
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
                     </select>
@@ -900,10 +904,11 @@ function Employ({ onLogout, navigateTo }) {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Cake Details</label>
                     <select
-                      value={editForm['Cake details'] || 'No'}
+                      value={editForm['Cake details'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'Cake details': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
+                      <option value="">Cake Detaile...</option>
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
                     </select>
@@ -942,10 +947,11 @@ function Employ({ onLogout, navigateTo }) {
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Delivery Method</label>
                     <select
-                      value={editForm['Delivery method'] || 'Pickup'}
+                      value={editForm['Delivery method'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'Delivery method': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
+                      <option value="">Select Delivery Method ...</option>
                       <option value="Pickup">Pickup</option>
                       <option value="Delivery">Delivery</option>
                     </select>
