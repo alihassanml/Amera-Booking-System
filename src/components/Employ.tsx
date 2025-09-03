@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function Employ({ onLogout, navigateTo }) {  
+function Employ({ onLogout, navigateTo }) {
   const [searchType, setSearchType] = useState('phone');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [bookingId, setBookingId] = useState('');
@@ -238,8 +238,8 @@ function Employ({ onLogout, navigateTo }) {
                     type="button"
                     onClick={() => handleSearchTypeChange('phone')}
                     className={`flex-1 py-4 px-6 rounded-2xl font-medium transition-all duration-300 relative overflow-hidden ${searchType === 'phone'
-                        ? 'text-white shadow-lg transform scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'text-white shadow-lg transform scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     style={searchType === 'phone' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
                   >
@@ -249,8 +249,8 @@ function Employ({ onLogout, navigateTo }) {
                     type="button"
                     onClick={() => handleSearchTypeChange('id')}
                     className={`flex-1 py-4 px-6 rounded-2xl font-medium transition-all duration-300 relative overflow-hidden ${searchType === 'id'
-                        ? 'text-white shadow-lg transform scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'text-white shadow-lg transform scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     style={searchType === 'id' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
                   >
@@ -409,9 +409,9 @@ function Employ({ onLogout, navigateTo }) {
                         <div className="flex justify-between items-center">
                           <span className="text-gray-600 font-medium">Stage:</span>
                           <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking['Status'] === 'Booked' ? 'bg-green-100 text-green-800' :
-                              booking['Status'] === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                                booking['Status'] === 'Cancelled' ? 'bg-red-100 text-red-800' :
-                                  'bg-green-100 text-green-800'
+                            booking['Status'] === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                              booking['Status'] === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                                'bg-green-100 text-green-800'
                             }`}>
                             {booking['Status'] || 'N/A'}
                           </span>
@@ -677,12 +677,15 @@ function Employ({ onLogout, navigateTo }) {
 
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Photographer</label>
-                    <input
-                      type="text"
+                    <select
                       value={editForm['Photographer'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'Photographer': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    />
+                    >
+                      <option value="">Select photographer...</option>
+                      <option value="Ali">Thezza</option>
+                      <option value="Hassa">Jovie</option>
+                    </select>
                   </div>
 
                   <div>
