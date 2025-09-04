@@ -903,15 +903,12 @@ function Employ({ onLogout, navigateTo }) {
 
                   <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Cake Details</label>
-                    <select
+                    <input
+                      type="text"
                       value={editForm['Cake details'] || ''}
                       onChange={(e) => setEditForm({ ...editForm, 'Cake details': e.target.value })}
                       className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    >
-                      <option value="">Cake Detaile...</option>
-                      <option value="Yes">Yes</option>
-                      <option value="No">No</option>
-                    </select>
+                    />
                   </div>
 
                   <div>
@@ -934,17 +931,7 @@ function Employ({ onLogout, navigateTo }) {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-3">Delivery Location</label>
-                    <input
-                      type="text"
-                      value={editForm['Delivery Location'] || ''}
-                      onChange={(e) => setEditForm({ ...editForm, 'Delivery Location': e.target.value })}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    />
-                  </div>
-
-                  <div>
+                    <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Delivery Method</label>
                     <select
                       value={editForm['Delivery method'] || ''}
@@ -956,6 +943,18 @@ function Employ({ onLogout, navigateTo }) {
                       <option value="Delivery">Delivery</option>
                     </select>
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-3">Delivery Location</label>
+                    <input
+                      type="text"
+                      value={editForm['Delivery Location'] || ''}
+                      onChange={(e) => setEditForm({ ...editForm, 'Delivery Location': e.target.value })}
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    />
+                  </div>
+
+                
 
                   <div className="md:col-span-2">
                     <label className="block text-sm font-bold text-gray-700 mb-3">Customer Note</label>
