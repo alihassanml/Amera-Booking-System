@@ -10,6 +10,8 @@ function Employ({ onLogout, navigateTo }) {
   const [editingBooking, setEditingBooking] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [showRecords, setShowRecords] = useState(false);
+  const [selectedBookingIndex, setSelectedBookingIndex] = useState(null);
+  const [showCompactView, setShowCompactView] = useState(false);
 
   // Phone number formatting function
   const formatPhoneNumber = (value) => {
@@ -38,6 +40,40 @@ function Employ({ onLogout, navigateTo }) {
     setBookingId('');
     setError('');
   };
+
+
+
+  const sortBookingsByDate = (bookings) => {
+  return [...bookings].sort((a, b) => {
+    // Try to get the most relevant date from each booking
+    const getBookingDate = (booking) => {
+      // Priority order: Appointment Date, then any other date field available
+      const dateFields = [
+        booking['Appointment Date'],
+        booking['Online Payment Date'],
+        booking['Date of Birth'],
+        booking['Booking Date'], // if this field exists
+        booking['Created Date']   // if this field exists
+      ];
+      
+      // Find the first valid date
+      for (const dateField of dateFields) {
+        if (dateField && dateField !== 'N/A' && dateField.trim() !== '') {
+          return new Date(dateField);
+        }
+      }
+      
+      // If no valid date found, return a very old date to put it at the end
+      return new Date('1900-01-01');
+    };
+
+    const dateA = getBookingDate(a);
+    const dateB = getBookingDate(b);
+    
+    // Sort in descending order (latest first)
+    return dateB - dateA;
+  });
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -101,7 +137,8 @@ function Employ({ onLogout, navigateTo }) {
         bookingRecords = data;
       }
 
-      setBookings(bookingRecords);
+      const sortedBookings = sortBookingsByDate(bookingRecords);
+      setBookings(sortedBookings);
 
     } catch (err) {
       setError('Failed to fetch bookings. Please try again.');
@@ -184,13 +221,20 @@ function Employ({ onLogout, navigateTo }) {
     return amount ? `AED ${parseFloat(amount).toFixed(2)}` : 'N/A';
   };
 
+  const handleBackToResults = () => {
+    setSelectedBookingIndex(null);
+  };
+
   const clearSearch = () => {
     setBookings([]);
     setPhoneNumber('');
     setBookingId('');
     setSearchType('phone');
     setError('');
+    setSelectedBookingIndex(null); // Add this line
   };
+
+  
 
   return (
     <div
@@ -334,263 +378,33 @@ function Employ({ onLogout, navigateTo }) {
 
       {/* Results */}
       {/* Results Section - Replace your existing results section with this */}
+
       {bookings.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 pb-8">
-          <div className="space-y-8">
-            {bookings.map((booking, index) => (
-              <div key={index} className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-                {/* Card Header */}
-                <div
-                  className="px-8 py-6 flex justify-between items-center"
-                  style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
-                >
-                  <div>
-                    <h4 className="text-white text-xl font-bold">
-                      Booking #{booking['Booking ID'] || 'N/A'}
-                    </h4>
-                    <p className="text-white/80 text-sm mt-1">
-                      {booking['Service Name'] || 'N/A'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => handleEdit(booking)}
-                    className="bg-white px-6 py-3 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-lg"
-                    style={{ color: 'oklch(45% 0.085 224.283)' }}
-                  >
-                    Edit Booking
-                  </button>
-                </div>
+          {bookings.length > 1 && selectedBookingIndex === null ? (
+            // Compact view for multiple records
+            <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+              <div
+                className="px-8 py-6 text-white border-b border-gray-100"
+                style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+              >
+                <h2 className="text-2xl font-bold mb-2">Search Results ({bookings.length} found)</h2>
+                <p className="">Select a booking to view full details</p>
+              </div>
 
-                {/* Card Content */}
-                <div className="p-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
-                    {/* Customer Information */}
-                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Customer Information</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Full Name:</span>
-                          <span className="font-semibold text-gray-900">{booking['Customer Full Name'] || booking['Customer First Name'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Email:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['Customer Email'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Phone:</span>
-                          <span className="font-semibold text-gray-900">{booking['Customer Phone'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Baby Name:</span>
-                          <span className="font-semibold text-gray-900">{booking['Baby Name'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Baby's Age:</span>
-                          <span className="font-semibold text-gray-900">{booking["Baby's Age"] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Date of Birth:</span>
-                          <span className="font-semibold text-gray-900">{booking['Date of Birth'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Social Media Consent:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['Consent for Social Media'] || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Service Information */}
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Service Details</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Service Name:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['Service Name'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Category:</span>
-                          <span className="font-semibold text-gray-900">{booking['Category Name'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Service Amount:</span>
-                          <span className="font-bold text-gray-900">{formatCurrency(booking['Service Amount'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Duration:</span>
-                          <span className="font-semibold text-gray-900">{booking['Service Duration'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Extras:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['Service Extras'] || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Appointment Details */}
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Appointment Details</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Date:</span>
-                          <span className="font-semibold text-gray-900">{booking['Appointment Date'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Time:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['Appointment Time'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Duration:</span>
-                          <span className="font-semibold text-gray-900">{booking['Appointment Duration'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Status:</span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking['Appointment Status'] === 'Approved' ? 'bg-green-100 text-green-800' :
-                            booking['Appointment Status'] === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                            {booking['Appointment Status'] || 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Location:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['Location Name'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Photoshoot Location:</span>
-                          <span className="font-semibold text-gray-900">{booking['Photoshoot Location'] || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Payment Information */}
-                    <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-2xl border border-orange-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Payment Details</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Total Amount:</span>
-                          <span className="font-bold text-gray-900">{formatCurrency(booking['Appointment Amount'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Deposit:</span>
-                          <span className="font-bold text-green-600">{formatCurrency(booking['Deposit Amount'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Due Amount:</span>
-                          <span className="font-bold text-red-600">{formatCurrency(booking['Appointment Due Amount'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Tax Amount:</span>
-                          <span className="font-bold text-gray-900">{formatCurrency(booking['Tax Amount'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Discount:</span>
-                          <span className="font-bold text-purple-600">{formatCurrency(booking['Discount Amount'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Coupon:</span>
-                          <span className="font-semibold text-gray-900">{booking['Coupon Code'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Total with Tax:</span>
-                          <span className="font-bold text-gray-900">{formatCurrency(booking['Total with tax'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Price after Discount:</span>
-                          <span className="font-bold text-gray-900">{formatCurrency(booking['Price after discount'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Discount %:</span>
-                          <span className="font-semibold text-gray-900">{booking['Discount Percentage'] || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* E-commerce & Payment Tracking */}
-                    <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-6 rounded-2xl border border-teal-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">E-commerce & Payments</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">WooCommerce Order:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['WooCommerce Order No.'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">WooCommerce Payment:</span>
-                          <span className="font-bold text-green-600">{formatCurrency(booking['WooCommerce Payment'])}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Online Payment Date:</span>
-                          <span className="font-semibold text-gray-900">{booking['Online Payment Date'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Invoice (Zoho):</span>
-                          <span className="font-semibold text-gray-900">{booking['Invoice (Zoho ID)'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Paid in Cash:</span>
-                          <span className="font-semibold text-gray-900">{booking['Paid in cash'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Paid by POS:</span>
-                          <span className="font-semibold text-gray-900">{booking['Paid by POS'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">POS Reference:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['POS reference / receipt #'] || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Production Team & Content */}
-                    <div className="bg-gradient-to-br from-rose-50 to-pink-50 p-6 rounded-2xl border border-rose-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Production Team</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Photographer:</span>
-                          <span className="font-semibold text-gray-900">{booking['Photographer'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Editor:</span>
-                          <span className="font-semibold text-gray-900">{booking['Editor'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Video:</span>
-                          <span className="font-semibold text-gray-900">{booking['Video'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">RAW Photos:</span>
-                          <span className="font-semibold text-gray-900">{booking['RAW Photos to be sent'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Number of Photos:</span>
-                          <span className="font-semibold text-gray-900">{booking['Number of Photos'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Theme:</span>
-                          <span className="font-semibold text-gray-900">{booking['Theme number'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Cake:</span>
-                          <span className="font-semibold text-gray-900">{booking['Cake'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Cake Details:</span>
-                          <span className="font-semibold text-gray-900">{booking['Cake details'] || 'N/A'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Second Row - Project Status & Delivery */}
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                    {/* Project Status & Stage */}
-                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-2xl border border-indigo-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Project Status</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between items-center">
-                          <span className="text-gray-600 font-medium">Status:</span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking['Status'] === 'Booked' ? 'bg-green-100 text-green-800' :
+              <div className="p-6">
+                <div className="space-y-4">
+                  {bookings.map((booking, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all duration-200"
+                    >
+                      <div className="flex-1">
+                        <div className="text-sm text-gray-900">
+                          <span className="font-semibold">Customer:</span> {booking['Customer Full Name'] || booking['Customer First Name'] || 'N/A'} ·
+                          <span className="font-semibold"> Baby:</span> {booking['Baby Name'] || 'N/A'} ·
+                          <span className="font-semibold"> Status:</span>
+                          <span className={`ml-1 px-2 py-1 rounded-full text-xs font-bold ${booking['Status'] === 'Booked' ? 'bg-green-100 text-green-800' :
                             booking['Status'] === 'Photos sent for selection' ? 'bg-blue-100 text-blue-800' :
                               booking['Status'] === 'Photos selected' ? 'bg-purple-100 text-purple-800' :
                                 booking['Status'] === 'Editing' ? 'bg-yellow-100 text-yellow-800' :
@@ -600,69 +414,365 @@ function Employ({ onLogout, navigateTo }) {
                             {booking['Status'] || 'N/A'}
                           </span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Project Stage:</span>
-                          <span className="font-semibold text-gray-900">{booking['Project Stage'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Row Number:</span>
-                          <span className="font-semibold text-gray-900">{booking['row_number'] || 'N/A'}</span>
+                        <div className="text-xs text-gray-600 mt-1">
+                          [Invoice: {booking['Invoice (Zoho ID)'] || 'N/A'}] |
+                          Booking ID: {booking['Booking ID'] || 'N/A'}
                         </div>
                       </div>
-                    </div>
 
-                    {/* Delivery & File Management */}
-                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-100">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Delivery & Files</h5>
-                      <div className="space-y-3 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Delivery Method:</span>
-                          <span className="font-semibold text-gray-900">{booking['Delivery method'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Delivery Location:</span>
-                          <span className="font-semibold text-gray-900 text-xs">{booking['Delivery Location'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Pixieset File:</span>
-                          <span className="font-semibold text-gray-900">{booking['Pixieset File Name'] || 'N/A'}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600 font-medium">Pixieset Password:</span>
-                          <span className="font-semibold text-gray-900">{booking['Pixieset Password'] || 'N/A'}</span>
-                        </div>
-                      </div>
+                      <button
+                        onClick={() => setSelectedBookingIndex(index)}
+                        className="px-4 py-2 rounded-xl text-sm font-semibold text-white hover:scale-105 transition-all duration-300 shadow-lg ml-4"
+                        style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                      >
+                        View More
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Notes Section */}
-                  {(booking['Customer Note'] || booking['Additional studio notes']) && (
-                    <div className="mt-8 bg-gradient-to-br from-gray-50 to-slate-50 p-6 rounded-2xl border border-gray-200">
-                      <h5 className="font-bold text-gray-900 mb-4 text-lg">Notes & Comments</h5>
-                      <div className="space-y-4">
-                        {booking['Customer Note'] && (
-                          <div>
-                            <span className="text-sm font-bold text-gray-700 block mb-2">Customer Note:</span>
-                            <div className="bg-white p-4 rounded-xl border border-gray-200 text-sm text-gray-800 leading-relaxed shadow-sm">
-                              {booking['Customer Note']}
-                            </div>
-                          </div>
-                        )}
-                        {booking['Additional studio notes'] && (
-                          <div>
-                            <span className="text-sm font-bold text-gray-700 block mb-2">Studio Notes:</span>
-                            <div className="bg-white p-4 rounded-xl border border-gray-200 text-sm text-gray-800 leading-relaxed shadow-sm">
-                              {booking['Additional studio notes']}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            // Detailed view for single record or selected record
+            <div className="space-y-8">
+              {/* Back button when viewing selected booking */}
+              {bookings.length > 1 && selectedBookingIndex !== null && (
+                <button
+                  onClick={() => setSelectedBookingIndex(null)}
+                  className="px-6 py-3 bg-gray-500 text-white font-medium rounded-2xl hover:bg-gray-600 transition-all duration-300 hover:shadow-lg transform hover:scale-105"
+                >
+                  ← Back to Results
+                </button>
+              )}
+
+              {/* Show selected booking or all bookings if only one - FIXED: Remove double mapping */}
+              {(selectedBookingIndex !== null ? [bookings[selectedBookingIndex]] : bookings).map((booking, index) => (
+                <div key={selectedBookingIndex !== null ? selectedBookingIndex : index} className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+                  {/* Card Header */}
+                  <div
+                    className="px-8 py-6 flex justify-between items-center"
+                    style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                  >
+                    <div>
+                      <h4 className="text-white text-xl font-bold">
+                        Booking #{booking['Booking ID'] || 'N/A'}
+                      </h4>
+                      <p className="text-white/80 text-sm mt-1">
+                        {booking['Service Name'] || 'N/A'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleEdit(booking)}
+                      className="bg-white px-6 py-3 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-lg"
+                      style={{ color: 'oklch(45% 0.085 224.283)' }}
+                    >
+                      Edit Booking
+                    </button>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                      {/* Customer Information */}
+                      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-2xl border border-blue-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Customer Information</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Full Name:</span>
+                            <span className="font-semibold text-gray-900">{booking['Customer Full Name'] || booking['Customer First Name'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Email:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['Customer Email'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Phone:</span>
+                            <span className="font-semibold text-gray-900">{booking['Customer Phone'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Baby Name:</span>
+                            <span className="font-semibold text-gray-900">{booking['Baby Name'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Baby's Age:</span>
+                            <span className="font-semibold text-gray-900">{booking["Baby's Age"] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Date of Birth:</span>
+                            <span className="font-semibold text-gray-900">{booking['Date of Birth'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Social Media Consent:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['Consent for Social Media'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Service Information */}
+                      <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-2xl border border-purple-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Service Details</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Service Name:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['Service Name'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Category:</span>
+                            <span className="font-semibold text-gray-900">{booking['Category Name'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Service Amount:</span>
+                            <span className="font-bold text-gray-900">{formatCurrency(booking['Service Amount'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Duration:</span>
+                            <span className="font-semibold text-gray-900">{booking['Service Duration'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Extras:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['Service Extras'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Appointment Details */}
+                      <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-2xl border border-green-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Appointment Details</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Date:</span>
+                            <span className="font-semibold text-gray-900">{booking['Appointment Date'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Time:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['Appointment Time'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Duration:</span>
+                            <span className="font-semibold text-gray-900">{booking['Appointment Duration'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Status:</span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking['Appointment Status'] === 'Approved' ? 'bg-green-100 text-green-800' :
+                              booking['Appointment Status'] === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-gray-100 text-gray-800'
+                              }`}>
+                              {booking['Appointment Status'] || 'N/A'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Location:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['Location Name'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Photoshoot Location:</span>
+                            <span className="font-semibold text-gray-900">{booking['Photoshoot Location'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Payment Information */}
+                      <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-6 rounded-2xl border border-orange-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Payment Details</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Total Amount:</span>
+                            <span className="font-bold text-gray-900">{formatCurrency(booking['Appointment Amount'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Deposit:</span>
+                            <span className="font-bold text-green-600">{formatCurrency(booking['Deposit Amount'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Due Amount:</span>
+                            <span className="font-bold text-red-600">{formatCurrency(booking['Appointment Due Amount'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Tax Amount:</span>
+                            <span className="font-bold text-gray-900">{formatCurrency(booking['Tax Amount'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Discount:</span>
+                            <span className="font-bold text-purple-600">{formatCurrency(booking['Discount Amount'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Coupon:</span>
+                            <span className="font-semibold text-gray-900">{booking['Coupon Code'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Total with Tax:</span>
+                            <span className="font-bold text-gray-900">{formatCurrency(booking['Total with tax'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Price after Discount:</span>
+                            <span className="font-bold text-gray-900">{formatCurrency(booking['Price after discount'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Discount %:</span>
+                            <span className="font-semibold text-gray-900">{booking['Discount Percentage'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* E-commerce & Payment Tracking */}
+                      <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-6 rounded-2xl border border-teal-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">E-commerce & Payments</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">WooCommerce Order:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['WooCommerce Order No.'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">WooCommerce Payment:</span>
+                            <span className="font-bold text-green-600">{formatCurrency(booking['WooCommerce Payment'])}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Online Payment Date:</span>
+                            <span className="font-semibold text-gray-900">{booking['Online Payment Date'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Invoice (Zoho):</span>
+                            <span className="font-semibold text-gray-900">{booking['Invoice (Zoho ID)'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Paid in Cash:</span>
+                            <span className="font-semibold text-gray-900">{booking['Paid in cash'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Paid by POS:</span>
+                            <span className="font-semibold text-gray-900">{booking['Paid by POS'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">POS Reference:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['POS reference / receipt #'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Production Team & Content */}
+                      <div className="bg-gradient-to-br from-rose-50 to-pink-50 p-6 rounded-2xl border border-rose-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Production Team</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Photographer:</span>
+                            <span className="font-semibold text-gray-900">{booking['Photographer'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Editor:</span>
+                            <span className="font-semibold text-gray-900">{booking['Editor'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Video:</span>
+                            <span className="font-semibold text-gray-900">{booking['Video'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">RAW Photos:</span>
+                            <span className="font-semibold text-gray-900">{booking['RAW Photos to be sent'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Number of Photos:</span>
+                            <span className="font-semibold text-gray-900">{booking['Number of Photos'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Theme:</span>
+                            <span className="font-semibold text-gray-900">{booking['Theme number'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Cake:</span>
+                            <span className="font-semibold text-gray-900">{booking['Cake'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Cake Details:</span>
+                            <span className="font-semibold text-gray-900">{booking['Cake details'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Second Row - Project Status & Delivery */}
+                    <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                      {/* Project Status & Stage */}
+                      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-2xl border border-indigo-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Project Status</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600 font-medium">Status:</span>
+                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${booking['Status'] === 'Booked' ? 'bg-green-100 text-green-800' :
+                              booking['Status'] === 'Photos sent for selection' ? 'bg-blue-100 text-blue-800' :
+                                booking['Status'] === 'Photos selected' ? 'bg-purple-100 text-purple-800' :
+                                  booking['Status'] === 'Editing' ? 'bg-yellow-100 text-yellow-800' :
+                                    booking['Status'] === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                      'bg-gray-100 text-gray-800'
+                              }`}>
+                              {booking['Status'] || 'N/A'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Project Stage:</span>
+                            <span className="font-semibold text-gray-900">{booking['Project Stage'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Row Number:</span>
+                            <span className="font-semibold text-gray-900">{booking['row_number'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Delivery & File Management */}
+                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 p-6 rounded-2xl border border-emerald-100">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Delivery & Files</h5>
+                        <div className="space-y-3 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Delivery Method:</span>
+                            <span className="font-semibold text-gray-900">{booking['Delivery method'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Delivery Location:</span>
+                            <span className="font-semibold text-gray-900 text-xs">{booking['Delivery Location'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Pixieset File:</span>
+                            <span className="font-semibold text-gray-900">{booking['Pixieset File Name'] || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 font-medium">Pixieset Password:</span>
+                            <span className="font-semibold text-gray-900">{booking['Pixieset Password'] || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Notes Section */}
+                    {(booking['Customer Note'] || booking['Additional studio notes']) && (
+                      <div className="mt-8 bg-gradient-to-br from-gray-50 to-slate-50 p-6 rounded-2xl border border-gray-200">
+                        <h5 className="font-bold text-gray-900 mb-4 text-lg">Notes & Comments</h5>
+                        <div className="space-y-4">
+                          {booking['Customer Note'] && (
+                            <div>
+                              <span className="text-sm font-bold text-gray-700 block mb-2">Customer Note:</span>
+                              <div className="bg-white p-4 rounded-xl border border-gray-200 text-sm text-gray-800 leading-relaxed shadow-sm">
+                                {booking['Customer Note']}
+                              </div>
+                            </div>
+                          )}
+                          {booking['Additional studio notes'] && (
+                            <div>
+                              <span className="text-sm font-bold text-gray-700 block mb-2">Studio Notes:</span>
+                              <div className="bg-white p-4 rounded-xl border border-gray-200 text-sm text-gray-800 leading-relaxed shadow-sm">
+                                {booking['Additional studio notes']}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -931,7 +1041,7 @@ function Employ({ onLogout, navigateTo }) {
                     />
                   </div>
 
-                    <div>
+                  <div>
                     <label className="block text-sm font-bold text-gray-700 mb-3">Delivery Method</label>
                     <select
                       value={editForm['Delivery method'] || ''}
@@ -954,7 +1064,7 @@ function Employ({ onLogout, navigateTo }) {
                     />
                   </div>
 
-                
+
 
                   <div className="md:col-span-2">
                     <label className="block text-sm font-bold text-gray-700 mb-3">Customer Note</label>
