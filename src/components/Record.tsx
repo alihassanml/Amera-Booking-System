@@ -168,7 +168,7 @@ function Record({ onLogout, navigateTo, previousPage }) {
               <button
                 onClick={() => navigateTo(previousPage)}
                 className="px-6 py-3 text-white rounded-lg font-medium transition-all duration-300 hover:shadow-lg transform hover:scale-105"
-                style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                style={{ backgroundColor: '#959ea3' }}
               >
                 {previousPage === 'employee' ? 'Employee' : 'Dashboard'}
               </button>

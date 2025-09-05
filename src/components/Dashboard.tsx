@@ -111,7 +111,7 @@ function Dashboard({ onLogout, navigateTo }) {
               <button
                 onClick={() => navigateTo('records')}
                 className="px-6 py-3 text-white rounded-xl font-medium transition-all duration-300 hover:shadow-lg transform hover:scale-105"
-                style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                style={{ backgroundColor: '#959ea3' }}
               >
                 Records
               </button>

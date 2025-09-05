@@ -287,7 +287,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
       style={{
         background: `linear-gradient(135deg, 
           oklch(50% 0.085 224.283) 0%, 
-          oklch(45% 0.085 224.283) 50%, 
+          #959ea3 50%, 
           oklch(40% 0.095 234.283) 100%)`
       }}
     >
@@ -306,7 +306,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                       ? 'text-white shadow-lg transform scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
-                    style={userType === 'user' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                    style={userType === 'user' ? { backgroundColor: '#959ea3' } : {}}
                   >
                     👤 Customer
                   </button>
@@ -318,7 +318,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                         ? 'text-white shadow-lg transform scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
-                      style={(userType === 'admin' || userType === 'employee') ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                      style={(userType === 'admin' || userType === 'employee') ? { backgroundColor: '#959ea3' } : {}}
                     >
                       <span>🔐 {userType === 'admin' ? 'Admin' : userType === 'employee' ? 'Employee' : 'Staff'}</span>
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,7 +385,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                             ? 'text-white shadow-lg transform scale-105'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
-                          style={searchType === 'phone' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                          style={searchType === 'phone' ? { backgroundColor: '#959ea3' } : {}}
                         >
                           📱 Phone Number
                         </button>
@@ -396,7 +396,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                             ? 'text-white shadow-lg transform scale-105'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
-                          style={searchType === 'id' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                          style={searchType === 'id' ? { backgroundColor: '#959ea3' } : {}}
                         >
                           🎫 Booking ID
                         </button>
@@ -552,7 +552,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'shadow-lg hover:-translate-y-1'
                     }`}
-                  style={(userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading) ? {} : { backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                  style={(userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading) ? {} : { backgroundColor: '#959ea3' }}
                 >
                   {userType === 'admin' ? (
                     adminLoading ? (
@@ -583,46 +583,38 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
             {/* Right Side - Visual */}
             <div
               className="w-96 flex items-center justify-center relative overflow-hidden"
-              style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+              style={{ backgroundColor: '#959ea3' }}
             >
               <div className="text-center text-white p-10 z-10">
                 <div className="mb-8">
                   {userType === 'admin' ? (
                     <div className="relative">
-                      <div className="w-24 h-24 mx-auto rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                        </svg>
+                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" />
                       </div>
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-400 rounded-full animate-pulse"></div>
                       <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-orange-300 rounded-full animate-bounce"></div>
                     </div>
                   ) : userType === 'employee' ? (
                     <div className="relative">
-                      <div className="w-24 h-24 mx-auto rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" />
                       </div>
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-pulse"></div>
                       <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-green-300 rounded-full animate-bounce"></div>
                     </div>
                   ) : searchType === 'phone' ? (
                     <div className="relative">
-                      <div className="w-24 h-24 mx-auto rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                        </svg>
+                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" />
                       </div>
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full animate-pulse"></div>
                       <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-300 rounded-full animate-bounce"></div>
                     </div>
                   ) : (
                     <div className="relative">
-                      <div className="w-24 h-24 mx-auto rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" />
                       </div>
                       <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
                       <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-pink-300 rounded-full animate-bounce"></div>
@@ -670,7 +662,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
               <button
                 onClick={resetSearch}
                 className="px-6 py-3 text-white rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:-translate-y-1 transform hover:scale-105"
-                style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                style={{ backgroundColor: '#959ea3' }}
               >
                 New Search
               </button>
@@ -681,7 +673,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
               {bookings.map((booking, index) => (
                 <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
                   {/* Card Header */}
-                  <div className="px-8 py-5 flex justify-between items-center" style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}>
+                  <div className="px-8 py-5 flex justify-between items-center" style={{ backgroundColor: '#959ea3' }}>
                     <div>
                       <h4 className="text-white text-xl font-semibold">
                         Booking #{booking['Booking ID']}
@@ -693,7 +685,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     {/* <button
                       onClick={() => handleEdit(booking)}
                       className="bg-white px-5 py-2 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300"
-                      style={{ color: 'oklch(45% 0.085 224.283)' }}
+                      style={{ color: '#959ea3' }}
                     >
                       Edit
                     </button> */}
@@ -813,7 +805,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
         <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 p-4">
           <div className="w-full max-w-4xl bg-white rounded-2xl max-h-[90vh] overflow-hidden shadow-2xl">
             {/* Modal Header */}
-            <div className="px-8 py-6 flex justify-between items-center" style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}>
+            <div className="px-8 py-6 flex justify-between items-center" style={{ backgroundColor: '#959ea3' }}>
               <h4 className="text-white text-xl font-semibold">
                 Edit Booking #{editForm['Booking ID']}
               </h4>
@@ -950,7 +942,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     ? 'bg-gray-400 text-white cursor-not-allowed'
                     : 'text-white hover:shadow-lg'
                     }`}
-                  style={loading ? {} : { backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                  style={loading ? {} : { backgroundColor: '#959ea3' }}
                 >
                   {loading ? 'Updating...' : 'Update Booking'}
                 </button>

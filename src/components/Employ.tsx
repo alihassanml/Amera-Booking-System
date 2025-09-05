@@ -256,7 +256,7 @@ function Employ({ onLogout, navigateTo }) {
               <button
                 onClick={() => navigateTo('records')}
                 className="px-6 py-3 text-white rounded-xl font-medium transition-all duration-300 hover:shadow-lg transform hover:scale-105"
-                style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                style={{ backgroundColor: '#959ea3' }}
               >
                 Records
               </button>
@@ -274,7 +274,7 @@ function Employ({ onLogout, navigateTo }) {
       {/* Search Section */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="px-8 py-6  text-white  border-b border-gray-100" style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}>
+          <div className="px-8 py-6  text-white  border-b border-gray-100" style={{ backgroundColor: '#959ea3' }}>
             <h2 className="text-2xl font-bold  mb-2">Search Bookings</h2>
             <p className="">Find customer bookings by phone number or booking ID</p>
           </div>
@@ -298,7 +298,7 @@ function Employ({ onLogout, navigateTo }) {
                       ? 'text-white shadow-lg transform scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
-                    style={searchType === 'phone' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                    style={searchType === 'phone' ? { backgroundColor: '#959ea3' } : {}}
                   >
                     Phone Number
                   </button>
@@ -309,7 +309,7 @@ function Employ({ onLogout, navigateTo }) {
                       ? 'text-white shadow-lg transform scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
-                    style={searchType === 'id' ? { backgroundColor: 'oklch(45% 0.085 224.283)' } : {}}
+                    style={searchType === 'id' ? { backgroundColor: '#959ea3' } : {}}
                   >
                     Booking ID
                   </button>
@@ -348,7 +348,7 @@ function Employ({ onLogout, navigateTo }) {
                     disabled={loading}
                     className={`px-8 py-4 rounded-2xl text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${loading ? 'bg-gray-400 cursor-not-allowed' : 'shadow-lg hover:-translate-y-1'
                       }`}
-                    style={loading ? {} : { backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                    style={loading ? {} : { backgroundColor: '#959ea3' }}
                   >
                     {loading ? (
                       <span className="flex items-center gap-3">
@@ -386,7 +386,7 @@ function Employ({ onLogout, navigateTo }) {
             <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
               <div
                 className="px-8 py-6 text-white border-b border-gray-100"
-                style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                style={{ backgroundColor: '#959ea3' }}
               >
                 <h2 className="text-2xl font-bold mb-2">Search Results ({bookings.length} found)</h2>
                 <p className="">Select a booking to view full details</p>
@@ -423,7 +423,7 @@ function Employ({ onLogout, navigateTo }) {
                       <button
                         onClick={() => setSelectedBookingIndex(index)}
                         className="px-4 py-2 rounded-xl text-sm font-semibold text-white hover:scale-105 transition-all duration-300 shadow-lg ml-4"
-                        style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                        style={{ backgroundColor: '#959ea3' }}
                       >
                         View More
                       </button>
@@ -451,7 +451,7 @@ function Employ({ onLogout, navigateTo }) {
                   {/* Card Header */}
                   <div
                     className="px-8 py-6 flex justify-between items-center"
-                    style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                    style={{ backgroundColor: '#959ea3' }}
                   >
                     <div>
                       <h4 className="text-white text-xl font-bold">
@@ -464,7 +464,7 @@ function Employ({ onLogout, navigateTo }) {
                     <button
                       onClick={() => handleEdit(booking)}
                       className="bg-white px-6 py-3 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300 shadow-lg"
-                      style={{ color: 'oklch(45% 0.085 224.283)' }}
+                      style={{ color: '#959ea3' }}
                     >
                       Edit Booking
                     </button>
@@ -783,7 +783,7 @@ function Employ({ onLogout, navigateTo }) {
             {/* Modal Header */}
             <div
               className="px-8 py-6 flex justify-between items-center"
-              style={{ backgroundColor: 'oklch(45% 0.085 224.283)' }}
+              style={{ backgroundColor: '#959ea3' }}
             >
               <div>
                 <h4 className="text-white text-xl font-bold">
@@ -1090,7 +1090,7 @@ function Employ({ onLogout, navigateTo }) {
                     disabled={loading}
                     className={`px-6 py-3 rounded-2xl font-medium transition-all duration-200 transform hover:scale-105 ${loading ? 'bg-gray-400 text-white cursor-not-allowed' : 'text-white hover:shadow-lg'
                       }`}
-                    style={loading ? {} : { backgroundColor: 'oklch(45% 0.085 224.283)' }}
+                    style={loading ? {} : { backgroundColor: '#959ea3' }}
                   >
                     {loading ? 'Updating...' : 'Update Booking'}
                   </button>
