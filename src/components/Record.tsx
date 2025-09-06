@@ -127,6 +127,28 @@ function Record({ onLogout, navigateTo, previousPage }) {
     });
   };
 
+  // Function to get sorted upcoming bookings by days remaining
+  const getSortedUpcomingBookings = () => {
+    if (!recordsData?.upcoming || recordsData.upcoming.length === 0) {
+      return [];
+    }
+
+    return recordsData.upcoming
+      .map(record => ({
+        ...record,
+        daysRemaining: calculateDaysRemaining(record.appointmentDate)
+      }))
+      .sort((a, b) => {
+        // Handle null values - put them at the end
+        if (a.daysRemaining === null && b.daysRemaining === null) return 0;
+        if (a.daysRemaining === null) return 1;
+        if (b.daysRemaining === null) return -1;
+        
+        // Sort by days remaining (ascending - soonest first)
+        return a.daysRemaining - b.daysRemaining;
+      });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -153,6 +175,8 @@ function Record({ onLogout, navigateTo, previousPage }) {
       </div>
     );
   }
+
+  const sortedUpcomingBookings = getSortedUpcomingBookings();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -280,7 +304,7 @@ function Record({ onLogout, navigateTo, previousPage }) {
             </div>
           </div>
 
-          {/* Upcoming Records Column */}
+          {/* Upcoming Records Column - Now Sorted by Days Remaining */}
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center mb-6">
               <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
@@ -294,32 +318,29 @@ function Record({ onLogout, navigateTo, previousPage }) {
               </span>
             </div>
             <div className="space-y-4 max-h-96 overflow-y-auto">
-              {recordsData?.upcoming && recordsData.upcoming.length > 0 ? (
-                recordsData.upcoming.map((record, index) => {
-                  const daysRemaining = calculateDaysRemaining(record.appointmentDate);
-                  return (
-                    <div key={`upcoming-${index}`} className="bg-green-50 rounded-lg p-4 border border-green-200">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-sm font-semibold text-gray-900">{record.name}</h4>
-                        <span className="text-xs text-green-600 font-medium">#{record.bookingId}</span>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-1">{record.email}</p>
-                      <p className="text-xs text-gray-800 font-medium mb-2">{record.serviceName}</p>
-                      <p className="text-xs text-gray-800 font-medium mb-2">{record.stage}</p>
-                      
-                      {/* Days Remaining */}
-                      {daysRemaining !== null && (
-                        <div className="bg-white rounded p-2 mb-2">
-                          <p className={`text-xs font-medium ${daysRemaining > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            {daysRemaining > 0 ? `${daysRemaining} days remaining` : `${Math.abs(daysRemaining)} days overdue`}
-                          </p>
-                        </div>
-                      )}
-                      
-                      <p className="text-xs text-green-700">{formatDate(record.appointmentDate)}</p>
+              {sortedUpcomingBookings.length > 0 ? (
+                sortedUpcomingBookings.map((record, index) => (
+                  <div key={`upcoming-${index}`} className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="text-sm font-semibold text-gray-900">{record.name}</h4>
+                      <span className="text-xs text-green-600 font-medium">#{record.bookingId}</span>
                     </div>
-                  );
-                })
+                    <p className="text-xs text-gray-600 mb-1">{record.email}</p>
+                    <p className="text-xs text-gray-800 font-medium mb-2">{record.serviceName}</p>
+                    <p className="text-xs text-gray-800 font-medium mb-2">{record.stage}</p>
+                    
+                    {/* Days Remaining */}
+                    {record.daysRemaining !== null && (
+                      <div className="bg-white rounded p-2 mb-2">
+                        <p className={`text-xs font-medium ${record.daysRemaining > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {record.daysRemaining > 0 ? `${record.daysRemaining} days remaining` : `${Math.abs(record.daysRemaining)} days overdue`}
+                        </p>
+                      </div>
+                    )}
+                    
+                    <p className="text-xs text-green-700">{formatDate(record.appointmentDate)}</p>
+                  </div>
+                ))
               ) : (
                 <div className="text-center py-8">
                   <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

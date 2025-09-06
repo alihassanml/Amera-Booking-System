@@ -64,6 +64,39 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
     setError('');
   };
 
+
+  const sortBookingsByDate = (bookings) => {
+    return [...bookings].sort((a, b) => {
+      // Try to get the most relevant date from each booking
+      const getBookingDate = (booking) => {
+        // Priority order: Appointment Date, then any other date field available
+        const dateFields = [
+          booking['Appointment Date'],
+          booking['Online Payment Date'],
+          booking['Date of Birth'],
+          booking['Booking Date'], // if this field exists
+          booking['Created Date']   // if this field exists
+        ];
+
+        // Find the first valid date
+        for (const dateField of dateFields) {
+          if (dateField && dateField !== 'N/A' && dateField.trim() !== '') {
+            return new Date(dateField);
+          }
+        }
+
+        // If no valid date found, return a very old date to put it at the end
+        return new Date('1900-01-01');
+      };
+
+      const dateA = getBookingDate(a);
+      const dateB = getBookingDate(b);
+
+      // Sort in descending order (latest first)
+      return dateB - dateA;
+    });
+  };
+
   const handleUserTypeChange = (type) => {
     setUserType(type);
     setPhoneNumber('');
@@ -199,7 +232,8 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
         bookingRecords = data;
       }
 
-      setBookings(bookingRecords);
+      const sortedBookings = sortBookingsByDate(bookingRecords);
+      setBookings(sortedBookings);
       setShowModal(false);
 
     } catch (err) {
@@ -210,58 +244,6 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
     }
   };
 
-  const handleEdit = (booking) => {
-    setEditingBooking(booking);
-    setEditForm({
-      'Booking ID': booking['Booking ID'],
-      'Customer Full Name': booking['Customer Full Name'],
-      'Customer Email': booking['Customer Email'],
-      'Customer Phone': booking['Customer Phone'],
-      'Service Name': booking['Service Name'],
-      'Appointment Date': booking['Appointment Date'],
-      'Appointment Time': booking['Appointment Time'],
-      'Customer Note': booking['Customer Note'] || '',
-      'Status': booking['Status'] || 'Booked',
-      'Baby Name': booking['Baby Name'] || '',
-      'Date of Birth': booking['Date of Birth'] || '',
-    });
-  };
-
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch('https://ai.senselensstudio.ae/webhook/edit-form', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          bookingId: editForm['Booking ID'],
-          ...editForm
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to update booking');
-
-      const updatedBookings = bookings.map(booking => {
-        if (booking['Booking ID'] === editForm['Booking ID']) {
-          return { ...booking, ...editForm };
-        }
-        return booking;
-      });
-
-      setBookings(updatedBookings);
-      setEditingBooking(null);
-      setEditForm({});
-      setError('');
-
-    } catch (err) {
-      setError('Failed to update booking. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const formatCurrency = (amount) => {
     return amount ? `AED ${parseFloat(amount).toFixed(2)}` : 'N/A';
@@ -352,7 +334,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     )}
                   </div>
                 </div>
-                
+
                 <h1 className="text-4xl font-bold text-gray-800 mb-3 leading-tight">
                   Welcome Back!
                 </h1>
@@ -795,158 +777,6 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Modal */}
-      {editingBooking && (
-        <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="w-full max-w-4xl bg-white rounded-2xl max-h-[90vh] overflow-hidden shadow-2xl">
-            {/* Modal Header */}
-            <div className="px-8 py-6 flex justify-between items-center" style={{ backgroundColor: '#959ea3' }}>
-              <h4 className="text-white text-xl font-semibold">
-                Edit Booking #{editForm['Booking ID']}
-              </h4>
-              <button
-                onClick={() => { setEditingBooking(null); setEditForm({}); }}
-                className="bg-white/20 hover:bg-white/30 text-white rounded-full w-9 h-9 flex items-center justify-center text-lg transition-colors duration-200"
-              >
-                ×
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-8 overflow-y-auto max-h-[calc(90vh-88px)]">
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg mb-6 text-sm">
-                  {error}
-                </div>
-              )}
-
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Customer Full Name</label>
-                  <input
-                    type="text"
-                    value={editForm['Customer Full Name'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Customer Full Name': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Baby Name</label>
-                  <input
-                    type="text"
-                    value={editForm['Baby Name'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Baby Name': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-                  <input
-                    type="email"
-                    value={editForm['Customer Email'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Customer Email': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    value={editForm['Customer Phone'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Customer Phone': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Appointment Date</label>
-                  <input
-                    type="text"
-                    value={editForm['Appointment Date'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Appointment Date': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Appointment Time</label>
-                  <input
-                    type="text"
-                    value={editForm['Appointment Time'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Appointment Time': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-
-                <div className="">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Date of Birth</label>
-                  <input
-                    type="text"
-                    value={editForm['Date of Birth'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Date of Birth': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Stage</label>
-                  <select
-                    value={editForm['Status'] || 'Pending'}
-                    onChange={(e) => setEditForm({ ...editForm, 'Status': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200"
-                  >
-                    <option value="Booked">Booked</option>
-                    <option value="Photos sent for selection">Photos sent for selection</option>
-                    <option value="Photos selected">Photos selected</option>
-                    <option value="Editing">Editing</option>
-                    <option value="Edited photos sent">Edited photos sent</option>
-                    <option value="Album layout sent">Album layout sent</option>
-                    <option value="Pending customer confirmation">Pending customer confirmation</option>
-                    <option value="Sent for printing">Sent for printing</option>
-                    <option value="Ready for delivery">Ready for delivery</option>
-                    <option value="Out for delivery">Out for delivery</option>
-                    <option value="Delivered">Delivered</option>
-                  </select>
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Customer Note</label>
-                  <textarea
-                    rows={4}
-                    value={editForm['Customer Note'] || ''}
-                    onChange={(e) => setEditForm({ ...editForm, 'Customer Note': e.target.value })}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors duration-200 resize-vertical"
-                  />
-                </div>
-              </div>
-
-              <div className="flex gap-4 justify-end mt-8">
-                <button
-                  onClick={() => { setEditingBooking(null); setEditForm({}); }}
-                  className="px-6 py-3 bg-gray-500 text-white rounded-2xl font-medium hover:bg-gray-600 transition-colors duration-200 transform hover:scale-105"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleEditSubmit}
-                  disabled={loading}
-                  className={`px-6 py-3 rounded-2xl font-medium transition-all duration-200 transform hover:scale-105 ${loading
-                    ? 'bg-gray-400 text-white cursor-not-allowed'
-                    : 'text-white hover:shadow-lg'
-                    }`}
-                  style={loading ? {} : { backgroundColor: '#959ea3' }}
-                >
-                  {loading ? 'Updating...' : 'Update Booking'}
-                </button>
-              </div>
             </div>
           </div>
         </div>
