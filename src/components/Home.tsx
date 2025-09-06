@@ -157,7 +157,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
     try {
       // You can create a separate endpoint for employee validation or use the same one
       // For now, I'll use a simple check - replace with your actual employee validation logic
-      if (employeeCredentials.email === 'alihassanbscs99@gmail.com' && employeeCredentials.password === '1234') {
+      if (employeeCredentials.email === 'ai.senselens@gmail.com' && employeeCredentials.password === '123456') {
         onEmployeeLogin();
       } else {
         setError('Please enter correct employee credentials');
