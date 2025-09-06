@@ -64,7 +64,6 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
     setError('');
   };
 
-
   const sortBookingsByDate = (bookings) => {
     return [...bookings].sort((a, b) => {
       // Try to get the most relevant date from each booking
@@ -244,7 +243,6 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
     }
   };
 
-
   const formatCurrency = (amount) => {
     return amount ? `AED ${parseFloat(amount).toFixed(2)}` : 'N/A';
   };
@@ -273,18 +271,18 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
           oklch(40% 0.095 234.283) 100%)`
       }}
     >
-      {/* Search Modal */}
+      {/* Search Modal - Made Responsive */}
       {showModal && (
-        <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50 p-4">
-          <div className={`w-full max-w-4xl bg-white rounded-3xl flex overflow-hidden shadow-2xl h-[70vh] min-h-[600px]`}>
+        <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="w-full max-w-5xl bg-white rounded-2xl lg:rounded-3xl flex flex-col lg:flex-row overflow-hidden shadow-2xl max-h-[95vh] lg:h-[70vh] lg:min-h-[600px]">
             {/* Left Side - Form */}
-            <div className="flex-1 p-12 flex flex-col justify-center bg-white">
+            <div className="flex-1 p-4 sm:p-6 lg:p-12 flex flex-col justify-center bg-white overflow-y-auto">
               <div>
-                <div className="flex gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6">
                   <button
                     type="button"
                     onClick={() => handleUserTypeChange('user')}
-                    className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${userType === 'user'
+                    className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base relative overflow-hidden ${userType === 'user'
                       ? 'text-white shadow-lg transform scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
@@ -296,7 +294,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     <button
                       type="button"
                       onClick={() => setShowAdminDropdown(!showAdminDropdown)}
-                      className={`w-full py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden flex items-center justify-between ${(userType === 'admin' || userType === 'employee')
+                      className={`w-full py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base relative overflow-hidden flex items-center justify-between ${(userType === 'admin' || userType === 'employee')
                         ? 'text-white shadow-lg transform scale-105'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
@@ -309,14 +307,14 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     </button>
 
                     {showAdminDropdown && (
-                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-10">
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg sm:rounded-xl shadow-lg z-10">
                         <button
                           type="button"
                           onClick={() => {
                             setUserType('admin');
                             setShowAdminDropdown(false);
                           }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 first:rounded-t-xl transition-colors duration-200"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-gray-50 first:rounded-t-lg sm:first:rounded-t-xl transition-colors duration-200 text-sm sm:text-base"
                         >
                           🔐 Admin
                         </button>
@@ -326,7 +324,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                             setUserType('employee');
                             setShowAdminDropdown(false);
                           }}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-50 last:rounded-b-xl transition-colors duration-200"
+                          className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left hover:bg-gray-50 last:rounded-b-lg sm:last:rounded-b-xl transition-colors duration-200 text-sm sm:text-base"
                         >
                           👤 Employee
                         </button>
@@ -335,10 +333,10 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                   </div>
                 </div>
 
-                <h1 className="text-4xl font-bold text-gray-800 mb-3 leading-tight">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-2 sm:mb-3 leading-tight">
                   Welcome Back!
                 </h1>
-                <p className="text-lg text-gray-600 mb-8">
+                <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 lg:mb-8">
                   {userType === 'admin'
                     ? 'Admin login to access dashboard'
                     : userType === 'employee'
@@ -347,23 +345,23 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                 </p>
 
                 {error && (
-                  <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-300 text-red-800 px-5 py-4 rounded-xl mb-6 text-sm font-medium">
+                  <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-300 text-red-800 px-3 sm:px-5 py-3 sm:py-4 rounded-lg sm:rounded-xl mb-4 sm:mb-6 text-xs sm:text-sm font-medium">
                     {error}
                   </div>
                 )}
 
                 {/* User Type Selector */}
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   {userType === 'user' && (
                     <>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                         Search By
                       </label>
-                      <div className="flex gap-4">
+                      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                         <button
                           type="button"
                           onClick={() => handleSearchTypeChange('phone')}
-                          className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${searchType === 'phone'
+                          className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base relative overflow-hidden ${searchType === 'phone'
                             ? 'text-white shadow-lg transform scale-105'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
@@ -374,7 +372,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                         <button
                           type="button"
                           onClick={() => handleSearchTypeChange('id')}
-                          className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-300 relative overflow-hidden ${searchType === 'id'
+                          className={`flex-1 py-2 sm:py-3 px-3 sm:px-4 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base relative overflow-hidden ${searchType === 'id'
                             ? 'text-white shadow-lg transform scale-105'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             }`}
@@ -388,11 +386,11 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                 </div>
 
                 {/* Input Field */}
-                <div className="mb-8">
+                <div className="mb-4 sm:mb-6 lg:mb-8">
                   {userType === 'admin' ? (
                     <>
-                      <div className="mb-4">
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      <div className="mb-3 sm:mb-4">
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                           Admin Email
                         </label>
                         <div className="relative">
@@ -401,11 +399,11 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                             placeholder="Enter admin email"
                             value={adminCredentials.email}
                             onChange={(e) => setAdminCredentials({ ...adminCredentials, email: e.target.value })}
-                            className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                            className="w-full pl-4 sm:pl-6 pr-12 sm:pr-16 py-3 sm:py-4 text-sm sm:text-base lg:text-lg border-2 border-gray-200 rounded-lg sm:rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
                           />
-                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                               </svg>
                             </div>
@@ -413,7 +411,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                           Admin Password
                         </label>
                         <div className="relative">
@@ -422,11 +420,11 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                             placeholder="Enter admin password"
                             value={adminCredentials.password}
                             onChange={(e) => setAdminCredentials({ ...adminCredentials, password: e.target.value })}
-                            className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                            className="w-full pl-4 sm:pl-6 pr-12 sm:pr-16 py-3 sm:py-4 text-sm sm:text-base lg:text-lg border-2 border-gray-200 rounded-lg sm:rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
                           />
-                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                               </svg>
                             </div>
@@ -436,8 +434,8 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     </>
                   ) : userType === 'employee' ? (
                     <>
-                      <div className="mb-4">
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      <div className="mb-3 sm:mb-4">
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                           Employee Email
                         </label>
                         <div className="relative">
@@ -446,11 +444,11 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                             placeholder="Enter employee email"
                             value={employeeCredentials.email}
                             onChange={(e) => setEmployeeCredentials({ ...employeeCredentials, email: e.target.value })}
-                            className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                            className="w-full pl-4 sm:pl-6 pr-12 sm:pr-16 py-3 sm:py-4 text-sm sm:text-base lg:text-lg border-2 border-gray-200 rounded-lg sm:rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
                           />
-                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                               </svg>
                             </div>
@@ -458,7 +456,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                           Employee Password
                         </label>
                         <div className="relative">
@@ -467,11 +465,11 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                             placeholder="Enter employee password"
                             value={employeeCredentials.password}
                             onChange={(e) => setEmployeeCredentials({ ...employeeCredentials, password: e.target.value })}
-                            className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                            className="w-full pl-4 sm:pl-6 pr-12 sm:pr-16 py-3 sm:py-4 text-sm sm:text-base lg:text-lg border-2 border-gray-200 rounded-lg sm:rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
                           />
-                          <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                            <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
+                            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                               </svg>
                             </div>
@@ -481,7 +479,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     </>
                   ) : searchType === 'phone' ? (
                     <>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                         Phone Number
                       </label>
                       <div className="relative">
@@ -491,11 +489,11 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                           value={phoneNumber}
                           onChange={handlePhoneChange}
                           maxLength={15}
-                          className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                          className="w-full pl-4 sm:pl-6 pr-12 sm:pr-16 py-3 sm:py-4 text-sm sm:text-base lg:text-lg border-2 border-gray-200 rounded-lg sm:rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
                         />
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                          <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                             </svg>
                           </div>
@@ -504,7 +502,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     </>
                   ) : (
                     <>
-                      <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      <label className="block text-xs sm:text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
                         Booking ID
                       </label>
                       <div className="relative">
@@ -513,11 +511,11 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                           placeholder="Enter your booking ID"
                           value={bookingId}
                           onChange={(e) => setBookingId(e.target.value)}
-                          className="w-full pl-6 pr-16 py-4 text-lg border-2 border-gray-200 rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
+                          className="w-full pl-4 sm:pl-6 pr-12 sm:pr-16 py-3 sm:py-4 text-sm sm:text-base lg:text-lg border-2 border-gray-200 rounded-lg sm:rounded-2xl outline-none transition-all duration-300 bg-gray-50 focus:border-blue-400 focus:shadow-xl focus:bg-white focus:scale-[1.02]"
                         />
-                        <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                          <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="absolute right-3 sm:right-4 top-1/2 transform -translate-y-1/2">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                           </div>
@@ -530,7 +528,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                 <button
                   onClick={userType === 'admin' ? handleAdminLogin : userType === 'employee' ? handleEmployeeLogin : handleSubmit}
                   disabled={userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading}
-                  className={`w-full py-4 px-6 rounded-2xl text-white font-semibold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${(userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading)
+                  className={`w-full py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-2xl text-white font-semibold text-sm sm:text-base lg:text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl ${(userType === 'admin' ? adminLoading : userType === 'employee' ? employeeLoading : loading)
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'shadow-lg hover:-translate-y-1'
                     }`}
@@ -538,22 +536,22 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                 >
                   {userType === 'admin' ? (
                     adminLoading ? (
-                      <span className="flex items-center justify-center gap-3">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span className="flex items-center justify-center gap-2 sm:gap-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         Logging in...
                       </span>
                     ) : 'Admin Login'
                   ) : userType === 'employee' ? (
                     employeeLoading ? (
-                      <span className="flex items-center justify-center gap-3">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span className="flex items-center justify-center gap-2 sm:gap-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         Logging in...
                       </span>
                     ) : 'Employee Login'
                   ) : (
                     loading ? (
-                      <span className="flex items-center justify-center gap-3">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span className="flex items-center justify-center gap-2 sm:gap-3">
+                        <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                         Finding Bookings...
                       </span>
                     ) : 'Find My Bookings'
@@ -562,55 +560,55 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
               </div>
             </div>
 
-            {/* Right Side - Visual */}
+            {/* Right Side - Visual (Hidden on mobile, visible on large screens) */}
             <div
-              className="w-96 flex items-center justify-center relative overflow-hidden"
+              className="hidden lg:flex w-80 xl:w-96 items-center justify-center relative overflow-hidden"
               style={{ backgroundColor: '#959ea3' }}
             >
-              <div className="text-center text-white p-10 z-10">
-                <div className="mb-8">
+              <div className="text-center text-white p-6 xl:p-10 z-10">
+                <div className="mb-6 xl:mb-8">
                   {userType === 'admin' ? (
                     <div className="relative">
-                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <img src="./logo.png" alt="" />
+                      <div className="w-40 h-20 xl:w-50 xl:h-25 mx-auto rounded-xl xl:rounded-2xl items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" className="w-full h-full object-contain" />
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-red-400 rounded-full animate-pulse"></div>
-                      <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-orange-300 rounded-full animate-bounce"></div>
+                      <div className="absolute -top-2 -right-2 w-4 h-4 xl:w-6 xl:h-6 bg-red-400 rounded-full animate-pulse"></div>
+                      <div className="absolute -bottom-2 -left-2 w-3 h-3 xl:w-4 xl:h-4 bg-orange-300 rounded-full animate-bounce"></div>
                     </div>
                   ) : userType === 'employee' ? (
                     <div className="relative">
-                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <img src="./logo.png" alt="" />
+                      <div className="w-40 h-20 xl:w-50 xl:h-25 mx-auto rounded-xl xl:rounded-2xl items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" className="w-full h-full object-contain" />
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-400 rounded-full animate-pulse"></div>
-                      <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-green-300 rounded-full animate-bounce"></div>
+                      <div className="absolute -top-2 -right-2 w-4 h-4 xl:w-6 xl:h-6 bg-blue-400 rounded-full animate-pulse"></div>
+                      <div className="absolute -bottom-2 -left-2 w-3 h-3 xl:w-4 xl:h-4 bg-green-300 rounded-full animate-bounce"></div>
                     </div>
                   ) : searchType === 'phone' ? (
                     <div className="relative">
-                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <img src="./logo.png" alt="" />
+                      <div className="w-40 h-20 xl:w-50 xl:h-25 mx-auto rounded-xl xl:rounded-2xl items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" className="w-full h-full object-contain" />
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-400 rounded-full animate-pulse"></div>
-                      <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-blue-300 rounded-full animate-bounce"></div>
+                      <div className="absolute -top-2 -right-2 w-4 h-4 xl:w-6 xl:h-6 bg-green-400 rounded-full animate-pulse"></div>
+                      <div className="absolute -bottom-2 -left-2 w-3 h-3 xl:w-4 xl:h-4 bg-blue-300 rounded-full animate-bounce"></div>
                     </div>
                   ) : (
                     <div className="relative">
-                      <div className="w-50 h-25 mx-auto rounded-2xl  items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
-                        <img src="./logo.png" alt="" />
+                      <div className="w-40 h-20 xl:w-50 xl:h-25 mx-auto rounded-xl xl:rounded-2xl items-center justify-center mb-4 transform hover:scale-110 transition-all duration-300">
+                        <img src="./logo.png" alt="" className="w-full h-full object-contain" />
                       </div>
-                      <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full animate-pulse"></div>
-                      <div className="absolute -bottom-2 -left-2 w-4 h-4 bg-pink-300 rounded-full animate-bounce"></div>
+                      <div className="absolute -top-2 -right-2 w-4 h-4 xl:w-6 xl:h-6 bg-yellow-400 rounded-full animate-pulse"></div>
+                      <div className="absolute -bottom-2 -left-2 w-3 h-3 xl:w-4 xl:h-4 bg-pink-300 rounded-full animate-bounce"></div>
                     </div>
                   )}
                 </div>
-                <h3 className="text-2xl font-semibold mb-4">
+                <h3 className="text-xl xl:text-2xl font-semibold mb-3 xl:mb-4">
                   {userType === 'admin'
                     ? 'Admin Access'
                     : userType === 'employee'
                       ? 'Employee Access'
                       : 'Your Bookings Await'}
                 </h3>
-                <p className="text-base opacity-90 leading-relaxed">
+                <p className="text-sm xl:text-base opacity-90 leading-relaxed">
                   {userType === 'admin'
                     ? 'Full admin portal access with edit permissions'
                     : userType === 'employee'
@@ -623,27 +621,27 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
               </div>
 
               {/* Floating Elements */}
-              <div className="absolute top-10 left-10 w-3 h-3 bg-white/30 rounded-full animate-ping"></div>
-              <div className="absolute bottom-20 right-16 w-2 h-2 bg-white/40 rounded-full animate-pulse"></div>
-              <div className="absolute top-32 right-8 w-4 h-4 bg-white/20 rounded-full animate-bounce"></div>
+              <div className="absolute top-10 left-10 w-2 h-2 xl:w-3 xl:h-3 bg-white/30 rounded-full animate-ping"></div>
+              <div className="absolute bottom-20 right-16 w-1.5 h-1.5 xl:w-2 xl:h-2 bg-white/40 rounded-full animate-pulse"></div>
+              <div className="absolute top-32 right-8 w-3 h-3 xl:w-4 xl:h-4 bg-white/20 rounded-full animate-bounce"></div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Bookings Display */}
+      {/* Bookings Display - Made Responsive */}
       {bookings.length > 0 && !showModal && (
-        <div className="min-h-screen bg-gray-50 py-10 px-4">
+        <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-10 px-2 sm:px-4">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 lg:mb-10 gap-4">
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Your Bookings</h2>
-                <p className="text-gray-600">Found {bookings.length} booking{bookings.length !== 1 ? 's' : ''}</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Your Bookings</h2>
+                <p className="text-sm sm:text-base text-gray-600">Found {bookings.length} booking{bookings.length !== 1 ? 's' : ''}</p>
               </div>
               <button
                 onClick={resetSearch}
-                className="px-6 py-3 text-white rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:-translate-y-1 transform hover:scale-105"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-white rounded-lg sm:rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:-translate-y-1 transform hover:scale-105 text-sm sm:text-base"
                 style={{ backgroundColor: '#959ea3' }}
               >
                 New Search
@@ -651,75 +649,68 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
             </div>
 
             {/* Bookings Grid */}
-            <div className="space-y-8">
+            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
               {bookings.map((booking, index) => (
-                <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                <div key={index} className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 transition-all duration-300">
                   {/* Card Header */}
-                  <div className="px-8 py-5 flex justify-between items-center" style={{ backgroundColor: '#959ea3' }}>
+                  <div className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0" style={{ backgroundColor: '#959ea3' }}>
                     <div>
-                      <h4 className="text-white text-xl font-semibold">
+                      <h4 className="text-white text-lg sm:text-xl font-semibold">
                         Booking #{booking['Booking ID']}
                       </h4>
-                      <p className="text-white/80 text-sm mt-1">
+                      <p className="text-white/80 text-xs sm:text-sm mt-1">
                         {booking['Service Name']}
                       </p>
                     </div>
-                    {/* <button
-                      onClick={() => handleEdit(booking)}
-                      className="bg-white px-5 py-2 rounded-2xl text-sm font-semibold hover:bg-gray-50 hover:scale-105 transition-all duration-300"
-                      style={{ color: '#959ea3' }}
-                    >
-                      Edit
-                    </button> */}
                   </div>
 
                   {/* Card Content */}
-                  <div className="p-8">
-                    <div className="grid md:grid-cols-2 gap-8 mb-6">
+                  <div className="p-4 sm:p-6 lg:p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6">
                       <div>
-                        <h6 className="text-gray-700 text-sm font-semibold uppercase tracking-wide mb-4">
+                        <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
                           Customer Details
                         </h6>
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">Name:</span>
-                            <span className="text-gray-900 text-sm font-medium">{booking['Customer Full Name'] || 'N/A'}</span>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Name:</span>
+                            <span className="text-gray-900 text-xs sm:text-sm font-medium break-words">{booking['Customer Full Name'] || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">Email:</span>
-                            <span className="text-gray-900 text-sm font-medium">{booking['Customer Email'] || 'N/A'}</span>
+                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Email:</span>
+                            <span className="text-gray-900 text-xs sm:text-sm font-medium break-all">{booking['Customer Email'] || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">Phone:</span>
-                            <span className="text-gray-900 text-sm font-medium">{booking['Customer Phone'] || 'N/A'}</span>
+                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Phone:</span>
+                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Customer Phone'] || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">Baby Name:</span>
-                            <span className="text-gray-900 text-sm font-medium">{booking['Baby Name'] || 'N/A'}</span>
+                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Baby Name:</span>
+                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Baby Name'] || 'N/A'}</span>
                           </div>
                         </div>
                       </div>
 
                       <div>
-                        <h6 className="text-gray-700 text-sm font-semibold uppercase tracking-wide mb-4">
+                        <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
                           Appointment Details
                         </h6>
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">Date:</span>
-                            <span className="text-gray-900 text-sm font-medium">{booking['Appointment Date'] || 'N/A'}</span>
+                        <div className="space-y-1.5 sm:space-y-2">
+                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Date:</span>
+                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Appointment Date'] || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">Time:</span>
-                            <span className="text-gray-900 text-sm font-medium">{booking['Appointment Time'] || 'N/A'}</span>
+                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Time:</span>
+                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Appointment Time'] || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 text-sm">Duration:</span>
-                            <span className="text-gray-900 text-sm font-medium">{booking['Appointment Duration'] || 'N/A'}</span>
+                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Duration:</span>
+                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Appointment Duration'] || 'N/A'}</span>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-600 text-sm">Stage:</span>
-                            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${booking['Status'] === 'Booked'
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Stage:</span>
+                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold w-fit ${booking['Status'] === 'Booked'
                               ? 'bg-green-100 text-green-800'
                               : booking['Status'] === 'Pending'
                                 ? 'bg-yellow-100 text-yellow-800'
@@ -741,35 +732,35 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
                     </div>
 
                     {/* Financial Summary */}
-                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-6 rounded-xl mt-6">
-                      <h6 className="text-gray-700 text-sm font-semibold uppercase tracking-wide mb-4">
+                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 rounded-lg sm:rounded-xl mt-4 sm:mt-6">
+                      <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
                         Payment Summary
                       </h6>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                         <div className="text-center">
                           <div className="text-gray-600 text-xs mb-1">Total</div>
-                          <div className="text-gray-900 text-lg font-semibold">{formatCurrency(booking['Appointment Amount'])}</div>
+                          <div className="text-gray-900 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Appointment Amount'])}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-gray-600 text-xs mb-1">Deposit</div>
-                          <div className="text-green-600 text-lg font-semibold">{formatCurrency(booking['Deposit Amount'])}</div>
+                          <div className="text-green-600 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Deposit Amount'])}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-gray-600 text-xs mb-1">Due</div>
-                          <div className="text-red-600 text-lg font-semibold">{formatCurrency(booking['Appointment Due Amount'])}</div>
+                          <div className="text-red-600 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Appointment Due Amount'])}</div>
                         </div>
                         <div className="text-center">
                           <div className="text-gray-600 text-xs mb-1">Discount</div>
-                          <div className="text-purple-600 text-lg font-semibold">{formatCurrency(booking['Discount Amount'])}</div>
+                          <div className="text-purple-600 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Discount Amount'])}</div>
                         </div>
                       </div>
                     </div>
 
                     {/* Customer Note */}
                     {booking['Customer Note'] && (
-                      <div className="mt-6">
-                        <h6 className="text-gray-700 text-sm font-semibold mb-3">Customer Note</h6>
-                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-sm text-gray-700 leading-relaxed">
+                      <div className="mt-4 sm:mt-6">
+                        <h6 className="text-gray-700 text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Customer Note</h6>
+                        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-700 leading-relaxed">
                           {booking['Customer Note']}
                         </div>
                       </div>
