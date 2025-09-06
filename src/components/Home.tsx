@@ -35,6 +35,9 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
   const [employeeLoading, setEmployeeLoading] = useState(false);
   const [adminType, setAdminType] = useState('admin');
   const [showAdminDropdown, setShowAdminDropdown] = useState(false);
+  
+  // New state for selected booking
+  const [selectedBookingIndex, setSelectedBookingIndex] = useState(null);
 
   // Phone number formatting function
   const formatPhoneNumber = (value) => {
@@ -239,6 +242,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
 
       const sortedBookings = sortBookingsByDate(bookingRecords);
       setBookings(sortedBookings);
+      setSelectedBookingIndex(null); // Reset selection
       setShowModal(false);
 
     } catch (err) {
@@ -256,6 +260,7 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
   const resetSearch = () => {
     setShowModal(true);
     setBookings([]);
+    setSelectedBookingIndex(null);
     setPhoneNumber('');
     setBookingId('');
     setSearchType('phone');
@@ -265,6 +270,10 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
     setAdminCredentials({ email: '', password: '' });
     setEmployeeCredentials({ email: '', password: '' });
     setError('');
+  };
+
+  const backToCompactView = () => {
+    setSelectedBookingIndex(null);
   };
 
   return (
@@ -635,146 +644,227 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
         </div>
       )}
 
-      {/* Bookings Display - Made Responsive */}
+      {/* Bookings Display - Updated with compact view */}
       {bookings.length > 0 && !showModal && (
         <div className="min-h-screen bg-gray-50 py-4 sm:py-6 lg:py-10 px-2 sm:px-4">
-          <div className="max-w-6xl mx-auto">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 lg:mb-10 gap-4">
-              <div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Your Bookings</h2>
-                <p className="text-sm sm:text-base text-gray-600">Found {bookings.length} booking{bookings.length !== 1 ? 's' : ''}</p>
-              </div>
-              <button
-                onClick={resetSearch}
-                className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 text-white rounded-lg sm:rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:-translate-y-1 transform hover:scale-105 text-sm sm:text-base"
-                style={{ backgroundColor: '#959ea3' }}
-              >
-                New Search
-              </button>
-            </div>
-
-            {/* Bookings Grid */}
-            <div className="space-y-4 sm:space-y-6 lg:space-y-8">
-              {bookings.map((booking, index) => (
-                <div key={index} className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 transition-all duration-300">
-                  {/* Card Header */}
-                  <div className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0" style={{ backgroundColor: '#959ea3' }}>
+          <div className="max-w-7xl mx-auto">
+            {bookings.length > 1 && selectedBookingIndex === null ? (
+              // Compact view for multiple records
+              <div className="bg-white rounded-3xl overflow-hidden shadow-xl border border-gray-100">
+                <div
+                  className="px-8 py-6 text-white border-b border-gray-100"
+                  style={{ backgroundColor: '#959ea3' }}
+                >
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                      <h4 className="text-white text-lg sm:text-xl font-semibold">
-                        Booking #{booking['Booking ID']}
-                      </h4>
-                      <p className="text-white/80 text-xs sm:text-sm mt-1">
-                        {booking['Service Name']}
-                      </p>
+                      <h2 className="text-2xl font-bold mb-2">Search Results ({bookings.length} found)</h2>
+                      <p className="">Select a booking to view full details</p>
                     </div>
-                  </div>
-
-                  {/* Card Content */}
-                  <div className="p-4 sm:p-6 lg:p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6">
-                      <div>
-                        <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
-                          Customer Details
-                        </h6>
-                        <div className="space-y-1.5 sm:space-y-2">
-                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Name:</span>
-                            <span className="text-gray-900 text-xs sm:text-sm font-medium break-words">{booking['Customer Full Name'] || 'N/A'}</span>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Email:</span>
-                            <span className="text-gray-900 text-xs sm:text-sm font-medium break-all">{booking['Customer Email'] || 'N/A'}</span>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Phone:</span>
-                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Customer Phone'] || 'N/A'}</span>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Baby Name:</span>
-                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Baby Name'] || 'N/A'}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
-                          Appointment Details
-                        </h6>
-                        <div className="space-y-1.5 sm:space-y-2">
-                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Date:</span>
-                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Appointment Date'] || 'N/A'}</span>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Time:</span>
-                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Appointment Time'] || 'N/A'}</span>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Duration:</span>
-                            <span className="text-gray-900 text-xs sm:text-sm font-medium">{booking['Appointment Duration'] || 'N/A'}</span>
-                          </div>
-                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
-                            <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Stage:</span>
-                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold w-fit ${booking['Status'] === 'Booked'
-                              ? 'bg-green-100 text-green-800'
-                              : booking['Status'] === 'Pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : booking['Status'] === 'In Progress'
-                                  ? 'bg-blue-100 text-blue-800'
-                                  : booking['Status'] === 'Completed'
-                                    ? 'bg-purple-100 text-purple-800'
-                                    : booking['Status'] === 'Cancelled'
-                                      ? 'bg-red-100 text-red-800'
-                                      : booking['Status'] === 'Rescheduled'
-                                        ? 'bg-orange-100 text-orange-800'
-                                        : 'bg-green-100 text-green-800'
-                              }`}>
-                              {booking['Status'] || 'Pending'}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Financial Summary */}
-                    <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 rounded-lg sm:rounded-xl mt-4 sm:mt-6">
-                      <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
-                        Payment Summary
-                      </h6>
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                        <div className="text-center">
-                          <div className="text-gray-600 text-xs mb-1">Total</div>
-                          <div className="text-gray-900 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Appointment Amount'])}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-gray-600 text-xs mb-1">Deposit</div>
-                          <div className="text-green-600 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Deposit Amount'])}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-gray-600 text-xs mb-1">Due</div>
-                          <div className="text-red-600 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Appointment Due Amount'])}</div>
-                        </div>
-                        <div className="text-center">
-                          <div className="text-gray-600 text-xs mb-1">Discount</div>
-                          <div className="text-purple-600 text-sm sm:text-lg font-semibold">{formatCurrency(booking['Discount Amount'])}</div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Customer Note */}
-                    {booking['Customer Note'] && (
-                      <div className="mt-4 sm:mt-6">
-                        <h6 className="text-gray-700 text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Customer Note</h6>
-                        <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-700 leading-relaxed">
-                          {booking['Customer Note']}
-                        </div>
-                      </div>
-                    )}
+                    <button
+                      onClick={resetSearch}
+                      className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white rounded-2xl font-medium transition-all duration-300 hover:scale-105"
+                    >
+                      New Search
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {bookings.map((booking, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 rounded-2xl hover:bg-gray-100 transition-all duration-200 gap-4"
+                      >
+                        <div className="flex-1">
+                          <div className="text-sm text-gray-900 mb-2">
+                            <span className="font-semibold">Customer:</span> {booking['Customer Full Name'] || booking['Customer First Name'] || 'N/A'} •
+                            <span className="font-semibold"> Baby:</span> {booking['Baby Name'] || 'N/A'} •
+                            <span className="font-semibold"> Status:</span>
+                            <span className={`ml-1 px-2 py-1 rounded-full text-xs font-bold ${
+                              booking['Status'] === 'Booked' ? 'bg-green-100 text-green-800' :
+                              booking['Status'] === 'Photos sent for selection' ? 'bg-blue-100 text-blue-800' :
+                              booking['Status'] === 'Photos selected' ? 'bg-purple-100 text-purple-800' :
+                              booking['Status'] === 'Editing' ? 'bg-yellow-100 text-yellow-800' :
+                              booking['Status'] === 'Delivered' ? 'bg-green-100 text-green-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {booking['Status'] || 'N/A'}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-600 mt-1">
+                            <span className="font-medium">Date:</span> {booking['Appointment Date'] || 'N/A'} |
+                            <span className="font-medium"> Booking ID:</span> {booking['Booking ID'] || 'N/A'} |
+                            <span className="font-medium"> Amount:</span> {formatCurrency(booking['Appointment Amount'])}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setSelectedBookingIndex(index)}
+                          className="px-4 py-2 rounded-xl text-sm font-semibold text-white hover:scale-105 transition-all duration-300 shadow-lg"
+                          style={{ backgroundColor: '#959ea3' }}
+                        >
+                          View Details
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // Detailed view for single booking or selected booking
+              <>
+                {/* Header */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 lg:mb-10 gap-4">
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">
+                      {bookings.length > 1 ? 'Booking Details' : 'Your Booking'}
+                    </h2>
+                    <p className="text-sm sm:text-base text-gray-600">
+                      {bookings.length > 1 ? `Viewing booking ${selectedBookingIndex + 1} of ${bookings.length}` : 'Your booking information'}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 sm:gap-3">
+                    {bookings.length > 1 && selectedBookingIndex !== null && (
+                      <button
+                        onClick={backToCompactView}
+                        className="px-4 sm:px-6 py-2 sm:py-3 bg-gray-600 text-white rounded-lg sm:rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:-translate-y-1 transform hover:scale-105 text-sm sm:text-base"
+                      >
+                        ← Back to List
+                      </button>
+                    )}
+                    <button
+                      onClick={resetSearch}
+                      className="px-4 sm:px-6 py-2 sm:py-3 text-white rounded-lg sm:rounded-2xl font-medium transition-all duration-300 hover:shadow-lg hover:-translate-y-1 transform hover:scale-105 text-sm sm:text-base"
+                      style={{ backgroundColor: '#959ea3' }}
+                    >
+                      New Search
+                    </button>
+                  </div>
+                </div>
+
+                {/* Single Booking Detail */}
+                {(() => {
+                  const currentBooking = bookings.length === 1 ? bookings[0] : bookings[selectedBookingIndex];
+                  return (
+                    <div className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl overflow-hidden shadow-lg border border-gray-200 hover:shadow-xl hover:-translate-y-1 sm:hover:-translate-y-2 transition-all duration-300">
+                      {/* Card Header */}
+                      <div className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0" style={{ backgroundColor: '#959ea3' }}>
+                        <div>
+                          <h4 className="text-white text-lg sm:text-xl font-semibold">
+                            Booking #{currentBooking['Booking ID']}
+                          </h4>
+                          <p className="text-white/80 text-xs sm:text-sm mt-1">
+                            {currentBooking['Service Name']}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Card Content */}
+                      <div className="p-4 sm:p-6 lg:p-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6">
+                          <div>
+                            <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
+                              Customer Details
+                            </h6>
+                            <div className="space-y-1.5 sm:space-y-2">
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Name:</span>
+                                <span className="text-gray-900 text-xs sm:text-sm font-medium break-words">{currentBooking['Customer Full Name'] || 'N/A'}</span>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Email:</span>
+                                <span className="text-gray-900 text-xs sm:text-sm font-medium break-all">{currentBooking['Customer Email'] || 'N/A'}</span>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Phone:</span>
+                                <span className="text-gray-900 text-xs sm:text-sm font-medium">{currentBooking['Customer Phone'] || 'N/A'}</span>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Baby Name:</span>
+                                <span className="text-gray-900 text-xs sm:text-sm font-medium">{currentBooking['Baby Name'] || 'N/A'}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
+                              Appointment Details
+                            </h6>
+                            <div className="space-y-1.5 sm:space-y-2">
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Date:</span>
+                                <span className="text-gray-900 text-xs sm:text-sm font-medium">{currentBooking['Appointment Date'] || 'N/A'}</span>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Time:</span>
+                                <span className="text-gray-900 text-xs sm:text-sm font-medium">{currentBooking['Appointment Time'] || 'N/A'}</span>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Duration:</span>
+                                <span className="text-gray-900 text-xs sm:text-sm font-medium">{currentBooking['Appointment Duration'] || 'N/A'}</span>
+                              </div>
+                              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                                <span className="text-gray-600 text-xs sm:text-sm font-medium sm:font-normal">Stage:</span>
+                                <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-semibold w-fit ${currentBooking['Status'] === 'Booked'
+                                  ? 'bg-green-100 text-green-800'
+                                  : currentBooking['Status'] === 'Pending'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : currentBooking['Status'] === 'In Progress'
+                                      ? 'bg-blue-100 text-blue-800'
+                                      : currentBooking['Status'] === 'Completed'
+                                        ? 'bg-purple-100 text-purple-800'
+                                        : currentBooking['Status'] === 'Cancelled'
+                                          ? 'bg-red-100 text-red-800'
+                                          : currentBooking['Status'] === 'Rescheduled'
+                                            ? 'bg-orange-100 text-orange-800'
+                                            : 'bg-green-100 text-green-800'
+                                  }`}>
+                                  {currentBooking['Status'] || 'Pending'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Financial Summary */}
+                        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-4 sm:p-6 rounded-lg sm:rounded-xl mt-4 sm:mt-6">
+                          <h6 className="text-gray-700 text-xs sm:text-sm font-semibold uppercase tracking-wide mb-3 sm:mb-4">
+                            Payment Summary
+                          </h6>
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                            <div className="text-center">
+                              <div className="text-gray-600 text-xs mb-1">Total</div>
+                              <div className="text-gray-900 text-sm sm:text-lg font-semibold">{formatCurrency(currentBooking['Appointment Amount'])}</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-gray-600 text-xs mb-1">Deposit</div>
+                              <div className="text-green-600 text-sm sm:text-lg font-semibold">{formatCurrency(currentBooking['Deposit Amount'])}</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-gray-600 text-xs mb-1">Due</div>
+                              <div className="text-red-600 text-sm sm:text-lg font-semibold">{formatCurrency(currentBooking['Appointment Due Amount'])}</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-gray-600 text-xs mb-1">Discount</div>
+                              <div className="text-purple-600 text-sm sm:text-lg font-semibold">{formatCurrency(currentBooking['Discount Amount'])}</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Customer Note */}
+                        {currentBooking['Customer Note'] && (
+                          <div className="mt-4 sm:mt-6">
+                            <h6 className="text-gray-700 text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Customer Note</h6>
+                            <div className="bg-gray-50 p-3 sm:p-4 rounded-lg border border-gray-200 text-xs sm:text-sm text-gray-700 leading-relaxed">
+                              {currentBooking['Customer Note']}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
+              </>
+            )}
           </div>
         </div>
       )}
