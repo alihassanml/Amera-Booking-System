@@ -155,17 +155,23 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
     }
 
     try {
-      // You can create a separate endpoint for employee validation or use the same one
-      // For now, I'll use a simple check - replace with your actual employee validation logic
-      if (employeeCredentials.email === 'ai.senselens@gmail.com' && employeeCredentials.password === '123456') {
-        onEmployeeLogin();
+      const response = await fetch('https://ai.senselensstudio.ae/webhook/password-validation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(adminCredentials)
+      });
+
+      const data = await response.json();
+
+      if (data.status === "200") {
+        onAdminLogin();
       } else {
-        setError('Please enter correct employee credentials');
+        setError('Please enter correct information');
       }
     } catch (err) {
       setError('Please enter correct information');
     } finally {
-      setEmployeeLoading(false);
+      setAdminLoading(false);
     }
   };
 
