@@ -158,13 +158,13 @@ function Home({ onAdminLogin, onEmployeeLogin }) {
       const response = await fetch('https://ai.senselensstudio.ae/webhook/password-validation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(adminCredentials)
+        body: JSON.stringify(employeeCredentials)
       });
 
       const data = await response.json();
 
       if (data.status === "200") {
-        onAdminLogin();
+        onEmployeeLogin();
       } else {
         setError('Please enter correct information');
       }
